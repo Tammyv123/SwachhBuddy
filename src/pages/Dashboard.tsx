@@ -254,8 +254,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navbar */}
-      <Navbar onNavigate={onNavigate} />
+     
 
       {/* Header with improved gradient */}
       <div className="bg-gradient-to-br from-primary via-primary-glow to-accent text-white p-6 relative overflow-hidden">

@@ -7,13 +7,10 @@ import {
   Award,
   Shield,
   Smartphone,
-  Facebook,
-  Twitter,
-  Instagram,
-  Linkedin,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-bg.jpg";
+import basicsVideo from "@/assets/basics.mp4";
 import { Typewriter } from "react-simple-typewriter";
 import { motion } from "framer-motion";
 
@@ -168,6 +165,23 @@ const Landing = ({ onUserTypeSelect }: LandingProps) => {
               Engage with eco-friendly challenges that are fun, impactful, and
               rewarding. 🌱
             </p>
+
+            {/* Know About Us Button */}
+            <div className="mt-6">
+              <Button
+                size="lg"
+                className="bg-green-600 hover:bg-green-700 text-white shadow-lg"
+                asChild
+              >
+                <a
+                  href={basicsVideo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Know About Us
+                </a>
+              </Button>
+            </div>
           </motion.div>
 
           <motion.div
