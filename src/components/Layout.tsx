@@ -1,7 +1,7 @@
 // src/components/Layout.tsx
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
-import Footer from "./footer";
+import Footer from "./Footer";
 
 const Layout = () => {
   const navigate = useNavigate();
