@@ -62,7 +62,7 @@ const Settings = () => {
           <CardContent>
             <p className="text-green-800 mb-2">Select your preferred language:</p>
             <select className="w-full border border-green-300 rounded-md p-2 bg-green-50 text-green-900">
-              <option value="en">English</option>
+              <option value="en">Englishs</option>
               <option value="hi">हिंदी</option>
               <option value="bn">বাংলা</option>
               <option value="ta">தமிழ்</option>
