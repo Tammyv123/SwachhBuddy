@@ -16,7 +16,7 @@ const questions: Question[] = [
   { q: "Coconut shell after drinking water — which bin?", opts: ["Wet", "Dry", "Hazardous"], ans: 1 },
   { q: "Leftover curry with gravy — where does it go?", opts: ["Wet", "Dry", "Hazardous"], ans: 0 },
   { q: "Cracked ceramic coffee mug — where to dispose?", opts: ["Wet", "Dry", "Hazardous"], ans: 1 },
-  { q: "Empty pesticide bottle (plastic) — correct bin?", opts: ["Wet", "Dry", "Hazardous"], ans: 2 },
+  { q: "Empty pesticide bottles (plastic) — correct bin?", opts: ["Wet", "Dry", "Hazardous"], ans: 2 },
   { q: "Ash from burnt wood in a fireplace — which bin?", opts: ["Wet", "Dry", "Hazardous"], ans: 1 },
   { q: "Used aluminium foil (with slight food stains) — correct bin?", opts: ["Wet", "Dry", "Hazardous"], ans: 1 },
   { q: "Expired paracetamol tablets — disposal?", opts: ["Wet", "Dry", "Hazardous"], ans: 2 },
