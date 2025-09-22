@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,12 +17,53 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import basicsVideo from '@/assets/basics.mp4';
 
 export const WasteBasicsModule = () => {
   const navigate = useNavigate();
   const [currentLesson, setCurrentLesson] = useState(0);
   const [completedLessons, setCompletedLessons] = useState<number[]>([]);
   const [quizAnswers, setQuizAnswers] = useState<{[key: number]: number}>({});
+  const [introWatched, setIntroWatched] = useState(false);
+
+  // Restore from localStorage
+  useEffect(() => {
+    const savedCompleted = localStorage.getItem('completedLessons');
+    if (savedCompleted) setCompletedLessons(JSON.parse(savedCompleted));
+
+    const savedQuiz = localStorage.getItem('quizAnswers');
+    if (savedQuiz) setQuizAnswers(JSON.parse(savedQuiz));
+
+    const savedIntro = localStorage.getItem('introWatched');
+    if (savedIntro) setIntroWatched(JSON.parse(savedIntro));
+  }, []);
+
+  // Save progress
+  useEffect(() => {
+    localStorage.setItem('completedLessons', JSON.stringify(completedLessons));
+  }, [completedLessons]);
+
+  useEffect(() => {
+    localStorage.setItem('quizAnswers', JSON.stringify(quizAnswers));
+  }, [quizAnswers]);
+
+  useEffect(() => {
+    localStorage.setItem('introWatched', JSON.stringify(introWatched));
+  }, [introWatched]);
+
+  // Restart Course
+  const handleRestartCourse = () => {
+    setCompletedLessons([]);
+    setQuizAnswers({});
+    setIntroWatched(false);
+    setCurrentLesson(0);
+
+    localStorage.removeItem("completedLessons");
+    localStorage.removeItem("quizAnswers");
+    localStorage.removeItem("introWatched");
+
+    toast.success("Course restarted! 🎉");
+  };
 
   const lessons = [
     {
@@ -33,40 +74,37 @@ export const WasteBasicsModule = () => {
       content: {
         introduction: "Waste is any material that is discarded after primary use, or is worthless, defective and of no use. In India, we generate approximately 62 million tonnes of waste annually.",
         keyPoints: [
-          "Waste is generated from households, industries, commercial establishments, and institutions",
-          "India generates about 1.7 lakh tonnes of solid waste daily",
-          "Only 54% of waste is scientifically treated in India",
-          "Improper waste management leads to environmental and health issues"
+          "Sources: households, industries, commercial spaces, institutions",
+          "India generates ~1.7 lakh tonnes of solid waste daily",
+          "Only 54% of waste is scientifically treated",
+          "Improper waste management causes health hazards and pollution",
+          "Rapid urbanization increases plastic and e-waste generation"
         ],
         detailedContent: `
-Waste management has become one of India's most pressing environmental challenges. With rapid urbanization and population growth, our cities are generating unprecedented amounts of waste.
+Waste management is a critical challenge due to increasing population and urban growth. Types of waste include:
+• Household: kitchen scraps, old clothes, packaging, leftover food
+• Commercial: offices, restaurants, shops, markets
+• Industrial: manufacturing byproducts, chemicals, metals, plastics
+• Construction & demolition: bricks, concrete, debris, wood
+• E-waste: electronics, batteries, circuits, mobile phones
 
-**Types of Waste Generation:**
-• **Household Waste**: Kitchen scraps, packaging materials, old clothes
-• **Commercial Waste**: Offices, shops, restaurants, markets
-• **Industrial Waste**: Manufacturing byproducts, chemicals, metals
-• **Construction Waste**: Building materials, demolition debris
-• **E-waste**: Electronic devices, batteries, circuits
+Environmental Impact:
+- Soil contamination due to hazardous chemicals and heavy metals
+- Water pollution from untreated liquid waste and dumping
+- Air pollution from open burning of plastics and garbage
+- Methane emission from landfills contributing to greenhouse gases
+- Biodiversity loss, affecting flora and fauna
 
-**The Current Situation in India:**
-India's waste generation is expected to increase to 165 million tonnes by 2030. Cities like Delhi, Mumbai, and Bengaluru generate the highest amounts of waste. The challenge is not just quantity but also the composition - increasing plastic waste and electronic waste pose new challenges.
-
-**Environmental Impact:**
-Improper waste disposal leads to:
-- Soil contamination
-- Water pollution
-- Air pollution through burning
-- Greenhouse gas emissions
-- Loss of biodiversity
+Best Practices:
+- Segregation at source (wet, dry, hazardous)
+- Recycling plastics, metals, paper, and glass
+- Composting organic waste to produce manure
+- Energy recovery from waste (biogas, incineration with emission control)
+- Community awareness and participation
         `,
         quiz: {
           question: "How much solid waste does India generate daily?",
-          options: [
-            "1.2 lakh tonnes",
-            "1.7 lakh tonnes", 
-            "2.1 lakh tonnes",
-            "2.5 lakh tonnes"
-          ],
+          options: ["1.2 lakh tonnes", "1.7 lakh tonnes", "2.1 lakh tonnes", "2.5 lakh tonnes"],
           correct: 1
         }
       }
@@ -77,11 +115,11 @@ Improper waste disposal leads to:
       duration: "15 min",
       type: "interactive",
       content: {
-        introduction: "The 3 R's are the foundation of waste management. This hierarchy helps us minimize waste and maximize resource efficiency.",
+        introduction: "The 3 R's are the foundation of waste management: Reduce, Reuse, Recycle. These principles help minimize waste and conserve resources.",
         principles: [
           {
             title: "REDUCE",
-            description: "Minimize waste generation at the source",
+            description: "Minimize waste generation at the source by conscious consumption.",
             examples: [
               "Use digital receipts instead of paper",
               "Choose products with minimal packaging",
@@ -91,30 +129,45 @@ Improper waste disposal leads to:
             impact: "Can reduce household waste by up to 30%"
           },
           {
-            title: "REUSE", 
-            description: "Find new purposes for items before disposing",
+            title: "REUSE",
+            description: "Find new purposes for items before discarding them.",
             examples: [
               "Use glass jars for storage",
               "Convert old clothes into cleaning rags",
-              "Repurpose cardboard boxes",
-              "Donate items in good condition"
+              "Repurpose cardboard boxes for storage",
+              "Donate items in good condition to charity"
             ],
             impact: "Extends product lifespan by 50-80%"
           },
           {
             title: "RECYCLE",
-            description: "Process materials to create new products",
+            description: "Process materials to create new products, reducing the need for raw materials.",
             examples: [
-              "Separate paper, plastic, glass, and metal",
+              "Separate paper, plastic, glass, and metal for recycling",
               "Compost organic waste",
               "Recycle electronic devices properly",
               "Use recycled products when possible"
             ],
-            impact: "Saves 60-70% of energy compared to new production"
+            impact: "Saves 60-70% energy compared to producing from raw materials"
           }
         ],
+        detailedContent: `
+Importance of 3 R's:
+- Reduces landfill usage
+- Conserves natural resources
+- Decreases pollution
+- Saves energy
+- Encourages sustainable lifestyle
+
+Implementation Tips:
+- Always segregate waste at home
+- Prefer products with eco-labels
+- Encourage community recycling drives
+- Educate children about waste reduction
+- Track household waste and try to reduce it every month
+        `,
         quiz: {
-          question: "Which R should be the first priority in waste management?",
+          question: "Which R should be the first priority?",
           options: ["Recycle", "Reuse", "Reduce", "All are equal"],
           correct: 2
         }
@@ -123,62 +176,56 @@ Improper waste disposal leads to:
     {
       id: 2,
       title: "Waste Segregation - The Indian Way",
-      duration: "20 min", 
+      duration: "20 min",
       type: "video",
       content: {
-        introduction: "India follows a color-coded system for waste segregation. Learn the correct way to separate waste at source.",
+        introduction: "India follows a color-coded system for waste segregation. Proper segregation is essential for recycling and composting.",
         videoUrl: "/videos/waste-segregation-india.mp4",
         categories: [
           {
             color: "Green",
-            type: "Wet Waste (Biodegradable)",
-            description: "Organic waste that decomposes naturally",
-            examples: [
-              "Fruit and vegetable peels",
-              "Cooked food leftovers", 
-              "Tea bags and coffee grounds",
-              "Garden waste like leaves",
-              "Dairy products",
-              "Meat and fish waste"
-            ],
-            treatment: "Composting or biogas generation",
-            percentage: "50-60% of household waste"
+            type: "Wet Waste",
+            description: "Organic, decomposable waste",
+            examples: ["Fruit peels", "Cooked leftovers", "Garden waste", "Tea leaves"],
+            treatment: "Composting/biogas",
+            percentage: "50-60%"
           },
           {
             color: "Blue",
-            type: "Dry Waste (Recyclable)",
-            description: "Materials that can be recycled or reused",
-            examples: [
-              "Paper and cardboard",
-              "Plastic bottles and containers",
-              "Glass bottles and jars",
-              "Metal cans and foils",
-              "Textiles and clothing",
-              "Rubber and leather items"
-            ],
+            type: "Dry Waste",
+            description: "Recyclable materials",
+            examples: ["Paper", "Plastic", "Glass", "Metal", "Cardboard"],
             treatment: "Recycling facilities",
-            percentage: "30-40% of household waste"
+            percentage: "30-40%"
           },
           {
             color: "Red",
             type: "Hazardous Waste",
-            description: "Dangerous materials requiring special handling",
-            examples: [
-              "Batteries and e-waste",
-              "Medical waste and syringes", 
-              "Chemicals and pesticides",
-              "Paint and solvent containers",
-              "Fluorescent bulbs",
-              "Expired medicines"
-            ],
-            treatment: "Specialized disposal facilities",
-            percentage: "5-10% of household waste"
+            description: "Special handling required",
+            examples: ["Batteries", "Medical waste", "Chemicals", "Paint containers"],
+            treatment: "Special disposal",
+            percentage: "5-10%"
           }
         ],
+        detailedContent: `
+Segregation Benefits:
+- Prevents contamination of recyclables
+- Reduces waste sent to landfills
+- Facilitates composting of organic waste
+- Ensures hazardous waste is treated safely
+- Improves efficiency of municipal waste management
+
+Tips for Households:
+- Use separate bins for wet, dry, and hazardous waste
+- Label bins clearly
+- Educate family members about segregation
+- Dispose of e-waste at collection centers
+- Compost kitchen and garden waste regularly
+        `,
         quiz: {
-          question: "Coconut shells should go into which bin?",
-          options: ["Green (Wet)", "Blue (Dry)", "Red (Hazardous)", "Any bin"],
-          correct: 1
+          question: "Coconut shells go into which bin?",
+          options: ["Green", "Blue", "Red", "Any bin"],
+          correct: 0
         }
       }
     }
@@ -195,10 +242,10 @@ Improper waste disposal leads to:
     setQuizAnswers({...quizAnswers, [lessonId]: answerIndex});
     const lesson = lessons[lessonId];
     if (answerIndex === lesson.content.quiz.correct) {
-      toast.success("Correct answer!");
+      toast.success("Correct!");
       handleCompleteLesson(lessonId);
     } else {
-      toast.error("Incorrect. Try again!");
+      toast.error("Incorrect, try again!");
     }
   };
 
@@ -211,55 +258,67 @@ Improper waste disposal leads to:
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-3xl font-bold text-primary">Waste Management Basics</h1>
-            <p className="text-muted-foreground">Understanding the fundamentals of waste management</p>
+            <p className="text-muted-foreground">Learn the fundamentals of waste management</p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2"
-          >
-            <Home className="h-4 w-4" />
-            Home
+          <Button variant="outline" size="sm" onClick={() => navigate('/')} className="flex items-center gap-2">
+            <Home className="h-4 w-4"/> Home
           </Button>
         </div>
+
+        {/* Intro Video */}
+        {!introWatched && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Introduction Video</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <video 
+                src={basicsVideo} 
+                controls 
+                className="w-full rounded-lg"
+                onEnded={() => setIntroWatched(true)}
+              />
+              <p className="mt-2 text-muted-foreground">Watch this video to start your journey!</p>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Progress */}
         <Card className="mb-6">
           <CardContent className="p-6">
             <div className="flex justify-between items-center mb-4">
               <span className="text-sm font-medium">Course Progress</span>
-              <Badge variant="secondary">
-                {completedLessons.length}/{lessons.length} lessons
-              </Badge>
+              <Badge variant="secondary">{completedLessons.length}/{lessons.length}</Badge>
             </div>
-            <Progress value={progressPercentage} className="w-full" />
+            <Progress value={progressPercentage} className="w-full mb-4" />
+
+            {/* Restart Course Button */}
+            <Button 
+              variant="destructive" 
+              size="sm" 
+              onClick={handleRestartCourse}
+              className="mt-2"
+            >
+              Restart Course
+            </Button>
           </CardContent>
         </Card>
 
-        {/* Lesson Navigation */}
+        {/* Lessons List */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           {lessons.map((lesson, index) => (
-            <Card 
-              key={lesson.id}
+            <Card key={lesson.id}
               className={`cursor-pointer transition-all duration-300 hover:shadow-lg ${
                 currentLesson === index ? 'ring-2 ring-primary' : ''
-              } ${
-                completedLessons.includes(index) ? 'bg-success/10 border-success' : ''
-              }`}
-              onClick={() => setCurrentLesson(index)}
-            >
+              } ${completedLessons.includes(index) ? 'bg-success/10 border-success' : ''}`}
+              onClick={() => introWatched ? setCurrentLesson(index) : toast.error("Watch the intro video first!")}>
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-center">
                   <Badge variant={lesson.type === 'video' ? 'default' : 'secondary'}>
-                    {lesson.type === 'video' ? <Video className="h-3 w-3 mr-1" /> : 
-                     lesson.type === 'interactive' ? <Play className="h-3 w-3 mr-1" /> :
-                     <FileText className="h-3 w-3 mr-1" />}
+                    {lesson.type === 'video' ? <Video className="h-3 w-3 mr-1"/> : lesson.type === 'interactive' ? <Play className="h-3 w-3 mr-1"/> : <FileText className="h-3 w-3 mr-1"/>}
                     {lesson.type}
                   </Badge>
-                  {completedLessons.includes(index) && (
-                    <CheckCircle className="h-5 w-5 text-success" />
-                  )}
+                  {completedLessons.includes(index) && <CheckCircle className="h-5 w-5 text-success" />}
                 </div>
                 <CardTitle className="text-lg">{lesson.title}</CardTitle>
                 <p className="text-sm text-muted-foreground">{lesson.duration}</p>
@@ -268,189 +327,86 @@ Improper waste disposal leads to:
           ))}
         </div>
 
-        {/* Current Lesson Content */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5" />
-              {lessons[currentLesson].title}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="content" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="content">Lesson Content</TabsTrigger>
-                <TabsTrigger value="quiz">Quiz</TabsTrigger>
-              </TabsList>
+        {/* Current Lesson */}
+        {introWatched && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2"><BookOpen className="h-5 w-5"/>{lessons[currentLesson].title}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="content" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="content">Lesson Content</TabsTrigger>
+                  <TabsTrigger value="quiz" disabled={!completedLessons.includes(currentLesson)}>Quiz</TabsTrigger>
+                </TabsList>
 
-              <TabsContent value="content" className="space-y-6">
-                <div className="prose max-w-none">
-                  <p className="text-lg leading-relaxed">
-                    {lessons[currentLesson].content.introduction}
-                  </p>
-
+                <TabsContent value="content" className="space-y-6">
+                  <p className="text-lg">{lessons[currentLesson].content.introduction}</p>
                   {lessons[currentLesson].content.keyPoints && (
-                    <div className="bg-accent/10 p-4 rounded-lg">
-                      <h3 className="font-semibold mb-3">Key Points:</h3>
-                      <ul className="space-y-2">
-                        {lessons[currentLesson].content.keyPoints.map((point, index) => (
-                          <li key={index} className="flex items-start gap-2">
-                            <CheckCircle className="h-4 w-4 text-success mt-1 flex-shrink-0" />
-                            <span>{point}</span>
-                          </li>
-                        ))}
-                      </ul>
+                    <ul className="list-disc ml-5 space-y-1">
+                      {lessons[currentLesson].content.keyPoints.map((point, i) => <li key={i}>{point}</li>)}
+                    </ul>
+                  )}
+                  {lessons[currentLesson].content.principles && (
+                    <div className="space-y-4">
+                      {lessons[currentLesson].content.principles.map((principle, idx) => (
+                        <div key={idx} className="border rounded-lg p-4">
+                          <h4 className="font-semibold text-primary mb-1">{principle.title}</h4>
+                          <p className="text-muted-foreground mb-2">{principle.description}</p>
+                          <ul className="list-disc ml-5 mb-2">
+                            {principle.examples.map((ex, i) => <li key={i}>{ex}</li>)}
+                          </ul>
+                          <p className="font-medium">Impact: {principle.impact}</p>
+                        </div>
+                      ))}
                     </div>
                   )}
-
+                  {lessons[currentLesson].content.categories && (
+                    <div className="space-y-4">
+                      {lessons[currentLesson].content.categories.map((cat, idx) => (
+                        <div key={idx} className="border rounded-lg p-4">
+                          <h4 className="font-semibold text-primary mb-1">{cat.type} ({cat.color} bin)</h4>
+                          <p className="text-muted-foreground mb-1">{cat.description}</p>
+                          <p className="mb-1">Examples: {cat.examples.join(", ")}</p>
+                          <p>Treatment: {cat.treatment}</p>
+                          <p>Percentage: {cat.percentage}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   {lessons[currentLesson].content.detailedContent && (
-                    <div className="whitespace-pre-line text-base leading-relaxed">
+                    <div className="whitespace-pre-line text-base leading-relaxed mt-4">
                       {lessons[currentLesson].content.detailedContent}
                     </div>
                   )}
+                </TabsContent>
 
-                  {lessons[currentLesson].content.principles && (
-                    <div className="space-y-6">
-                      {lessons[currentLesson].content.principles.map((principle, index) => (
-                        <div key={index} className="border rounded-lg p-4">
-                          <h3 className="text-xl font-bold text-primary mb-2">{principle.title}</h3>
-                          <p className="text-muted-foreground mb-3">{principle.description}</p>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <h4 className="font-semibold mb-2">Examples:</h4>
-                              <ul className="space-y-1">
-                                {principle.examples.map((example, i) => (
-                                  <li key={i} className="flex items-center gap-2 text-sm">
-                                    <div className="w-2 h-2 bg-primary rounded-full"></div>
-                                    {example}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                            <div className="bg-success/10 p-3 rounded-lg">
-                              <h4 className="font-semibold text-success mb-1">Impact:</h4>
-                              <p className="text-sm">{principle.impact}</p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {lessons[currentLesson].content.categories && (
-                    <div className="space-y-4">
-                      {lessons[currentLesson].content.categories.map((category, index) => (
-                        <div key={index} className="border rounded-lg p-4">
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className={`w-8 h-8 rounded-full ${
-                              category.color === 'Green' ? 'bg-green-500' :
-                              category.color === 'Blue' ? 'bg-blue-500' : 'bg-red-500'
-                            }`}></div>
-                            <div>
-                              <h3 className="font-bold">{category.type}</h3>
-                              <p className="text-sm text-muted-foreground">{category.description}</p>
-                            </div>
-                          </div>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <h4 className="font-semibold mb-2">Examples:</h4>
-                              <ul className="space-y-1">
-                                {category.examples.map((example, i) => (
-                                  <li key={i} className="flex items-center gap-2 text-sm">
-                                    <CheckCircle className="h-3 w-3 text-success" />
-                                    {example}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                            <div>
-                              <div className="mb-2">
-                                <strong>Treatment:</strong> {category.treatment}
-                              </div>
-                              <div>
-                                <strong>Percentage:</strong> {category.percentage}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
-
-              <TabsContent value="quiz" className="space-y-4">
-                <div className="bg-accent/10 p-6 rounded-lg">
-                  <h3 className="font-semibold mb-4">Test Your Knowledge</h3>
-                  <p className="text-lg mb-4">{lessons[currentLesson].content.quiz.question}</p>
-                  
+                <TabsContent value="quiz" className="space-y-4">
                   <div className="space-y-2">
+                    <p className="font-medium">{lessons[currentLesson].content.quiz.question}</p>
                     {lessons[currentLesson].content.quiz.options.map((option, index) => (
-                      <Button
-                        key={index}
-                        variant={quizAnswers[currentLesson] === index ? 
-                          (index === lessons[currentLesson].content.quiz.correct ? "default" : "destructive") 
-                          : "outline"}
-                        className="w-full justify-start text-left"
-                        onClick={() => handleQuizAnswer(currentLesson, index)}
-                      >
+                      <Button key={index} 
+                        variant={quizAnswers[currentLesson] === index ? (index === lessons[currentLesson].content.quiz.correct ? "default":"destructive") : "outline"}
+                        className="w-full text-left"
+                        onClick={() => handleQuizAnswer(currentLesson, index)}>
                         {option}
                       </Button>
                     ))}
                   </div>
+                </TabsContent>
+              </Tabs>
 
-                  {quizAnswers[currentLesson] !== undefined && (
-                    <div className="mt-4 p-3 rounded-lg bg-success/10">
-                      <p className="text-success font-medium">
-                        {quizAnswers[currentLesson] === lessons[currentLesson].content.quiz.correct ? 
-                          "Correct! Great job!" : "Incorrect. The correct answer is highlighted above."}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
-            </Tabs>
-
-            {/* Navigation */}
-            <div className="flex justify-between items-center mt-6 pt-6 border-t">
-              <Button
-                variant="outline"
-                onClick={() => setCurrentLesson(Math.max(0, currentLesson - 1))}
-                disabled={currentLesson === 0}
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Previous
-              </Button>
-              
-              <Button
-                onClick={() => handleCompleteLesson(currentLesson)}
-                disabled={completedLessons.includes(currentLesson)}
-              >
-                {completedLessons.includes(currentLesson) ? (
-                  <>
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    Completed
-                  </>
-                ) : (
-                  <>
-                    <Award className="h-4 w-4 mr-2" />
-                    Mark Complete
-                  </>
-                )}
-              </Button>
-
-              <Button
-                variant="outline"
-                onClick={() => setCurrentLesson(Math.min(lessons.length - 1, currentLesson + 1))}
-                disabled={currentLesson === lessons.length - 1}
-              >
-                Next
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+              {/* Navigation */}
+              <div className="flex justify-between mt-6 pt-6 border-t">
+                <Button variant="outline" onClick={() => setCurrentLesson(Math.max(0, currentLesson -1))} disabled={currentLesson===0}><ArrowLeft className="h-4 w-4 mr-2"/>Previous</Button>
+                <Button onClick={() => handleCompleteLesson(currentLesson)} disabled={completedLessons.includes(currentLesson)}>
+                  {completedLessons.includes(currentLesson) ? <><CheckCircle className="h-4 w-4 mr-2"/>Completed</> : <><Award className="h-4 w-4 mr-2"/>Mark Complete</>}
+                </Button>
+                <Button variant="outline" onClick={() => completedLessons.includes(currentLesson) ? setCurrentLesson(Math.min(lessons.length-1, currentLesson+1)) : toast.error("Complete lesson & quiz first!")} disabled={currentLesson===lessons.length-1}>Next<ArrowRight className="h-4 w-4 ml-2"/></Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

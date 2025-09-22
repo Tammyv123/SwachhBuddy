@@ -90,7 +90,7 @@ export const EcoEscapeRoom = () => {
         <Card className="max-w-2xl w-full">
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle className="text-3xl text-primary">♻️ Eco Escape Room</CardTitle>
+              <CardTitle className="text-3xl text-primary">♻ Eco Escape Room</CardTitle>
               <Button
                 variant="outline"
                 size="sm"

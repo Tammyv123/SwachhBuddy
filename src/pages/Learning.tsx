@@ -210,15 +210,16 @@ const Learning = () => {
   };
 
   const handleStartTraining = (levelId: number, route?: string) => {
-    if (route) {
-      navigate(route);
-    } else {
-      toast({
-        title: "Starting Training Level",
-        description: `Redirecting to Level ${levelId} training module...`,
-      });
-    }
-  };
+  if (route) {
+    navigate(route);
+  } else {
+    toast({
+      title: "Starting Training Level",
+      description: `Redirecting to Level ${levelId} training module...`,
+    });
+  }
+};
+
 
   const handleStartCourse = (courseId: string) => {
     setSelectedCourse(courseId);
