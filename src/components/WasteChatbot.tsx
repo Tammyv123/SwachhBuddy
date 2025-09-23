@@ -114,7 +114,8 @@ const WasteChatbot = () => {
     setInputMessage('');
     setIsLoading(true);
 
-    // New, more powerful instructions for the AI
+    // New, more powerful instructions for the AI for  precise answer
+    
     const instructions = `
       You are EcoBuddy, an expert assistant for waste management. 
       Your primary rules are:
