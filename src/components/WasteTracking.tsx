@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Truck, MapPin, Clock, Navigation, Phone, CheckCircle, Calendar } from "lucide-react";
+import LiveMap from "./LiveMap";
 
 interface WasteTrackingProps {
   isOpen: boolean;
@@ -25,7 +26,7 @@ const WasteTracking = ({ isOpen, onClose }: WasteTrackingProps) => {
       nextStop: "Community Center"
     },
     {
-      id: "WM002", 
+      id: "WM002",
       type: "Recycling Van",
       driver: "Priya Sharma",
       area: "Sector 12-14",
@@ -60,7 +61,7 @@ const WasteTracking = ({ isOpen, onClose }: WasteTrackingProps) => {
       status: "Confirmed"
     },
     {
-      id: "SP002", 
+      id: "SP002",
       address: "456 Park Avenue",
       wasteType: "Electronic Waste",
       scheduledTime: "Tomorrow, 10:00 AM",
@@ -113,7 +114,7 @@ const WasteTracking = ({ isOpen, onClose }: WasteTrackingProps) => {
               <MapPin className="mr-2 h-5 w-5" />
               Active Vehicles in Your Area
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {activeVehicles.map((vehicle) => (
                 <Card key={vehicle.id} className="hover:shadow-eco transition-all duration-300">
@@ -126,31 +127,31 @@ const WasteTracking = ({ isOpen, onClose }: WasteTrackingProps) => {
                     </div>
                     <CardDescription>{vehicle.type}</CardDescription>
                   </CardHeader>
-                  
+
                   <CardContent className="space-y-3">
                     <div className="flex items-center text-sm">
                       <Navigation className="mr-2 h-4 w-4 text-muted-foreground" />
                       <span>{vehicle.currentLocation}</span>
                     </div>
-                    
+
                     <div className="flex items-center text-sm">
                       <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
                       <span>ETA: {vehicle.eta}</span>
                     </div>
-                    
+
                     <div className="flex items-center justify-between text-sm">
                       <span>Capacity: {vehicle.capacity}</span>
                       <span className="text-muted-foreground">Area: {vehicle.area}</span>
                     </div>
-                    
+
                     <div className="text-xs text-muted-foreground">
                       Next Stop: {vehicle.nextStop}
                     </div>
-                    
+
                     <div className="flex gap-2 pt-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => setSelectedVehicle(vehicle.id)}
                       >
                         Track Live
@@ -171,7 +172,7 @@ const WasteTracking = ({ isOpen, onClose }: WasteTrackingProps) => {
               <Calendar className="mr-2 h-5 w-5" />
               Your Scheduled Pickups
             </h3>
-            
+
             <div className="space-y-3">
               {scheduledPickups.map((pickup) => (
                 <Card key={pickup.id}>
@@ -190,7 +191,7 @@ const WasteTracking = ({ isOpen, onClose }: WasteTrackingProps) => {
                           {pickup.scheduledTime}
                         </p>
                       </div>
-                      
+
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm">
                           Reschedule
@@ -204,7 +205,7 @@ const WasteTracking = ({ isOpen, onClose }: WasteTrackingProps) => {
                 </Card>
               ))}
             </div>
-            
+
             <Button variant="eco" className="w-full mt-4">
               Schedule New Pickup
             </Button>
@@ -213,20 +214,7 @@ const WasteTracking = ({ isOpen, onClose }: WasteTrackingProps) => {
           {/* Live Map Placeholder */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Live Location Map</h3>
-            <div className="bg-muted/30 rounded-lg p-8 text-center">
-              <MapPin className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">
-                Interactive map showing real-time vehicle locations would be integrated here
-              </p>
-              <p className="text-sm text-muted-foreground mt-2">
-                {selectedVehicle ? `Tracking ${selectedVehicle}` : "Select a vehicle above to track"}
-              </p>
-              {selectedVehicle && (
-                <Badge variant="default" className="mt-2">
-                  Live Tracking Active
-                </Badge>
-              )}
-            </div>
+            <LiveMap vehicles={activeVehicles.filter(v => selectedVehicle ? v.id === selectedVehicle : true)} />
           </div>
         </div>
 
