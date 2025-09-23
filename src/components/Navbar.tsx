@@ -21,11 +21,11 @@ import {
   LayoutDashboard,
   Gamepad,
   Leaf,
-  HandHelping,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useNavigate } from "react-router-dom";
 import ReferAndEarn from "./ReferAndEarn";
+import { motion } from "framer-motion";
 
 interface NavbarProps {
   onNavigate?: (path: string) => void;
@@ -53,12 +53,31 @@ const Navbar = ({ onNavigate }: NavbarProps) => {
     <nav className="bg-background border-b border-border sticky top-0 z-50 backdrop-blur-sm bg-background/80">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">SW</span>
-            </div>
-            <span className="font-bold text-lg text-foreground">Swachh Bharat</span>
+          {/* 🔥 Animated Logo */}
+          <div
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={() => handleNavigation("/")}
+          >
+            <motion.div
+              whileHover={{ rotate: 10, scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-9 h-9 rounded-full bg-gradient-to-r from-green-600 to-emerald-400 flex items-center justify-center shadow-md"
+            >
+              <motion.div
+                animate={{ rotate: [0, 360] }}
+                transition={{ repeat: Infinity, duration: 8, ease: "linear" }}
+              >
+                <Leaf className="w-5 h-5 text-white" />
+              </motion.div>
+            </motion.div>
+
+            <motion.span
+              className="font-extrabold text-xl bg-gradient-to-r from-green-700 to-emerald-400 bg-clip-text text-transparent"
+              whileHover={{ scale: 1.1 }}
+              transition={{ type: "spring", stiffness: 200 }}
+            >
+              SwachhBuddy
+            </motion.span>
           </div>
 
           {/* Navigation Links */}
