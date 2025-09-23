@@ -31,7 +31,8 @@ import Learning from "./pages/Learning";
 import { WasteBasicsModule } from "./components/learning/WasteBasicsModule";
 import { WasteAdvancedModule } from "./components/learning/WasteAdvanceModule";
 import WasteSortingGame from "./components/WasteSortingGame";
-//importing games
+
+// Games
 import WasteGame from "@/components/wastegame";
 import EcoSorterGame from "@/components/EcoSorterGame";
 
@@ -43,69 +44,83 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
-
 // Other Components
 import { EcoEscapeRoom } from "./components/EcoEscapeRoom";
 import NotFound from "./pages/NotFound";
+
+// Context
+import { PointsProvider } from "@/contexts/PointsContext";
 
 // React Query Client
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          {/* All pages wrapped in Layout for Navbar + Footer */}
-          <Route element={<Layout />}>
-            {/* Landing Page */}
-            <Route path="/" element={<Landing onUserTypeSelect={() => {}} />} />
+  <PointsProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            {/* All pages wrapped in Layout for Navbar + Footer */}
+            <Route element={<Layout />}>
+              {/* Landing Page */}
+              <Route path="/" element={<Landing onUserTypeSelect={() => {}} />} />
 
-            {/* Main Pages */}
-            <Route path="/play" element={<Play />} />
-            <Route path="/earn" element={<Earn />} />
-            <Route path="/resolve" element={<Resolve />} />
+              {/* Main Pages */}
+              <Route path="/play" element={<Play />} />
+              <Route path="/earn" element={<Earn />} />
+              <Route path="/resolve" element={<Resolve />} />
 
-            {/* Landing-details routes */}
-            <Route path="/community-engagement" element={<CommunityEngagement />} />
-            <Route path="/smart-segregation" element={<SmartSegregation />} />
-            <Route path="/progress-tracking" element={<ProgressTracking />} />
-            <Route path="/rewards-system" element={<RewardsSystemLanding />} />
-            <Route path="/transparency" element={<Transparency />} />
-            <Route path="/digital-first" element={<DigitalFirst />} />
+              {/* Landing-details routes */}
+              <Route path="/community-engagement" element={<CommunityEngagement />} />
+              <Route path="/smart-segregation" element={<SmartSegregation />} />
+              <Route path="/progress-tracking" element={<ProgressTracking />} />
+              <Route path="/rewards-system" element={<RewardsSystemLanding />} />
+              <Route path="/transparency" element={<Transparency />} />
+              <Route path="/digital-first" element={<DigitalFirst />} />
 
-            {/* Navbar-linked pages */}
-            <Route path="/profile" element={<UserProfile userData={{}} />} />
-            <Route path="/certifications" element={<Certifications />} />
-            <Route path="/rewards" element={<RewardsSystem />} />
-            <Route path="/settings" element={<Settings />} />
+              {/* Navbar-linked pages */}
+              <Route path="/profile" element={<UserProfile userData={{}} />} />
+              <Route path="/certifications" element={<Certifications />} />
+              <Route path="/rewards" element={<RewardsSystem />} />
+              <Route path="/settings" element={<Settings />} />
 
-            {/* Learning Pages */}
-            <Route path="/learning" element={<Learning />} />
-            <Route path="/learning/waste-basics" element={<WasteBasicsModule />} />
-            <Route path ="/learning/waste-advance" element={<WasteAdvancedModule />}/>
-            <Route path="/learning/waste-sorting-game" element={<WasteSortingGame />} />
+              {/* Learning Pages */}
+              <Route path="/learning" element={<Learning />} />
+              <Route path="/learning/waste-basics" element={<WasteBasicsModule />} />
+              <Route path="/learning/waste-advance" element={<WasteAdvancedModule />} />
+              <Route path="/learning/waste-sorting-game" element={<WasteSortingGame />} />
 
-            {/* User Type & Auth */}
-            <Route path="/get-started" element={<UserTypeSelection />} />
-            <Route path="/login" element={<ProtectedRoute requireAuth={false}><Login /></ProtectedRoute>} />
-            <Route path="/signup" element={<ProtectedRoute requireAuth={false}><Signup /></ProtectedRoute>} />
-            <Route path="/eco-escape-room" element={<EcoEscapeRoom />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/dashboard" element={<ProtectedRoute requireAuth={true}><Dashboard /></ProtectedRoute>} />
-            
-            <Route path="/manage-waste" element={<WasteGame />} />
+              {/* User Type & Auth */}
+              <Route path="/get-started" element={<UserTypeSelection />} />
+              <Route path="/login" element={<ProtectedRoute requireAuth={false}><Login /></ProtectedRoute>} />
+              <Route path="/signup" element={<ProtectedRoute requireAuth={false}><Signup /></ProtectedRoute>} />
+              <Route path="/auth" element={<Auth />} />
 
-            <Route path="/eco-sorter-game" element={<EcoSorterGame />} />
-            {/* Catch All */}
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+              {/* Dashboard */}
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute requireAuth={true}>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Games */}
+              <Route path="/manage-waste" element={<WasteGame />} />
+              <Route path="/eco-sorter-game" element={<EcoSorterGame />} />
+              <Route path="/eco-escape-room" element={<EcoEscapeRoom />} />
+
+              {/* Catch All */}
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </PointsProvider>
 );
 
 export default App;
