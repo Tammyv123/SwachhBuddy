@@ -14,7 +14,7 @@ const Play = () => {
     { title: "Waste Basics Module", component: WasteBasicsModule },
     { title: "Waste Sorting Game", component: WasteSortingGame },
     { title: "Eco Escape Room", component: EcoEscapeRoom },
-    { title: "Eco CrossWord", component: ManageWaste },
+    { title: "Eco Word Search", component: ManageWaste },
     { title: "Eco Sorter Training", component: EcoSorterGame }, // ✅ Added here
   ];
 
@@ -37,7 +37,7 @@ const Play = () => {
                   if (game.title === "Eco Escape Room") navigate("/eco-escape-room");
                   else if (game.title === "Waste Sorting Game") navigate("/learning/waste-sorting-game");
                   else if (game.title === "Waste Basics Module") navigate("/learning/waste-basics");
-                  else if (game.title === "Eco CrossWord") navigate("/manage-waste");
+                  else if (game.title === "Eco Word Search") navigate("/manage-waste");
                   else if (game.title === "Eco Sorter Training") navigate("/eco-sorter-game"); // ✅ new route
                 }}
               >

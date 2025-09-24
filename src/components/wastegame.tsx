@@ -1,125 +1,221 @@
-import { useState } from "react";
+import React, { useState, useRef } from "react";
 
-interface Cell {
-  letter?: string;       // correct letter
-  userInput?: string;    // what user types
-  isBlack?: boolean;     // black cell
-  visible?: boolean;     // prefilled letter
+// Word list for eco-friendly waste segregation
+const words = [
+  "GLASS",
+  "PLASTIC",
+  "COMPOST",
+  "MANURE",
+  "BIN",
+  "PAPER",
+  "EWASTE",
+  "RECYCLING",
+  "ORGANIC",
+  "SEGREGATE",
+];
+
+const gridSize = 15;
+
+// Generate empty grid with random letters
+const generateEmptyGrid = (): string[][] => {
+  return Array.from({ length: gridSize }, () =>
+    Array.from({ length: gridSize }, () => String.fromCharCode(65 + Math.floor(Math.random() * 26)))
+  );
+};
+
+// Place word horizontally or vertically
+const placeWord = (grid: string[][], word: string) => {
+  const direction = Math.random() > 0.5 ? "H" : "V";
+  if (direction === "H") {
+    const row = Math.floor(Math.random() * gridSize);
+    const col = Math.floor(Math.random() * (gridSize - word.length));
+    for (let i = 0; i < word.length; i++) grid[row][col + i] = word[i];
+  } else {
+    const row = Math.floor(Math.random() * (gridSize - word.length));
+    const col = Math.floor(Math.random() * gridSize);
+    for (let i = 0; i < word.length; i++) grid[row + i][col] = word[i];
+  }
+};
+
+interface Position {
+  row: number;
+  col: number;
 }
 
-const initialGrid: Cell[][] = [
-  [
-    { letter: "P", userInput: "", visible: true },
-    { letter: "L", userInput: "" },
-    { letter: "A", userInput: "" },
-    { letter: "S", userInput: "" },
-    { letter: "T", userInput: "", visible: true },
-  ],
-  [
-    { isBlack: true },
-    { letter: "O", userInput: "", visible: true },
-    { letter: "R", userInput: "" },
-    { letter: "G", userInput: "" },
-    { letter: "A", userInput: "" },
-  ],
-  [
-    { letter: "C", userInput: "", visible: true },
-    { letter: "O", userInput: "" },
-    { letter: "M", userInput: "" },
-    { letter: "P", userInput: "" },
-    { letter: "O", userInput: "" },
-  ],
-  [
-    { letter: "G", userInput: "" },
-    { letter: "L", userInput: "" },
-    { letter: "A", userInput: "", visible: true },
-    { letter: "S", userInput: "" },
-    { letter: "S", userInput: "" },
-  ],
-  [
-    { letter: "B", userInput: "", visible: true },
-    { letter: "I", userInput: "" },
-    { letter: "N", userInput: "" },
-    { isBlack: true },
-    { isBlack: true },
-  ],
-];
+const WordSearch: React.FC = () => {
+  const [grid] = useState(() => {
+    const g = generateEmptyGrid();
+    words.forEach((w) => placeWord(g, w.toUpperCase()));
+    return g;
+  });
 
-const clues = [
-  { word: "PLAST", direction: "across", row: 0, col: 0, clue: "Material to recycle" },
-  { word: "ORGA", direction: "across", row: 1, col: 1, clue: "Organic waste turns into?" },
-  { word: "COMPO", direction: "across", row: 2, col: 0, clue: "Organic soil enrichment" },
-  { word: "GLASS", direction: "across", row: 3, col: 0, clue: "Recyclable bottles" },
-  { word: "BIN", direction: "across", row: 4, col: 0, clue: "Where to throw waste" },
-];
+  const [foundWords, setFoundWords] = useState<string[]>([]);
+  const [selection, setSelection] = useState<Position[]>([]);
+  const isSelecting = useRef(false);
 
-const WasteGame = () => {
-  const [grid, setGrid] = useState(initialGrid);
-
-  const handleChange = (row: number, col: number, value: string) => {
-    const newGrid = [...grid];
-    newGrid[row][col].userInput = value.toUpperCase().slice(0, 1);
-    setGrid(newGrid);
+  // Mouse down starts selection
+  const handleMouseDown = (row: number, col: number) => {
+    isSelecting.current = true;
+    setSelection([{ row, col }]);
   };
 
-  const checkAnswers = () => {
-    let score = 0;
-    grid.forEach((row) =>
-      row.forEach((cell) => {
-        if (!cell.isBlack && cell.userInput === cell.letter) score += 1;
-      })
-    );
-    alert(`You got ${score} correct letters!`);
+  // Mouse enter adds to selection while dragging
+  const handleMouseEnter = (row: number, col: number) => {
+    if (!isSelecting.current) return;
+    setSelection((prev) => {
+      const last = prev[prev.length - 1];
+      if (!last || last.row !== row || last.col !== col) {
+        return [...prev, { row, col }];
+      }
+      return prev;
+    });
+  };
+
+  // Mouse up ends selection and checks word
+  const handleMouseUp = () => {
+    if (selection.length < 2) {
+      setSelection([]);
+      isSelecting.current = false;
+      return;
+    }
+
+    // Construct the selected word
+    const selectedWord = selection
+      .map((pos) => grid[pos.row][pos.col])
+      .join("");
+
+    const reversedWord = selectedWord.split("").reverse().join("");
+
+    if (words.includes(selectedWord) && !foundWords.includes(selectedWord)) {
+      setFoundWords((prev) => [...prev, selectedWord]);
+    } else if (words.includes(reversedWord) && !foundWords.includes(reversedWord)) {
+      setFoundWords((prev) => [...prev, reversedWord]);
+    }
+
+    setSelection([]);
+    isSelecting.current = false;
+  };
+
+  // Check if a cell is in current selection
+  const isSelected = (row: number, col: number) =>
+    selection.some((pos) => pos.row === row && pos.col === col);
+
+  // Check if a cell is part of found word
+  const isFound = (row: number, col: number) => {
+    for (const word of foundWords) {
+      for (let r = 0; r < gridSize; r++) {
+        for (let c = 0; c < gridSize; c++) {
+          if (grid[r][c] === word[0]) {
+            // Check horizontal
+            if (
+              c + word.length <= gridSize &&
+              word === grid[r].slice(c, c + word.length).join("")
+            )
+              if (row === r && col >= c && col < c + word.length) return true;
+            // Check vertical
+            if (
+              r + word.length <= gridSize &&
+              word === Array.from({ length: word.length }, (_, i) => grid[r + i][c]).join("")
+            )
+              if (col === c && row >= r && row < r + word.length) return true;
+          }
+        }
+      }
+    }
+    return false;
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-green-50">
-      <h1 className="text-3xl font-bold text-green-900 mb-6">Eco Crossword ♻</h1>
-
-      {/* Grid */}
-      <div className="grid gap-1">
-        {grid.map((row, rIndex) => (
-          <div className="flex" key={rIndex}>
-            {row.map((cell, cIndex) =>
-              cell.isBlack ? (
-                <div
-                  key={cIndex}
-                  className="w-10 h-10 bg-green-800 border border-green-400"
-                />
-              ) : (
-                <input
-                  key={cIndex}
-                  className="w-10 h-10 border border-green-400 text-center font-bold text-green-900 uppercase bg-white"
-                  value={cell.visible ? cell.letter : cell.userInput}
-                  onChange={(e) => handleChange(rIndex, cIndex, e.target.value)}
-                  disabled={cell.visible}
-                />
-              )
-            )}
+    <div style={styles.container}>
+      <h2>🌱 Waste Segregation Word Search 🌱</h2>
+      <div
+        style={styles.grid}
+        onMouseLeave={() => {
+          setSelection([]);
+          isSelecting.current = false;
+        }}
+      >
+        {grid.map((rowArr, rowIdx) => (
+          <div key={rowIdx} style={styles.row}>
+            {rowArr.map((letter, colIdx) => (
+              <div
+                key={colIdx}
+                style={{
+                  ...styles.cell,
+                  backgroundColor: isFound(rowIdx, colIdx)
+                    ? "#4caf50"
+                    : isSelected(rowIdx, colIdx)
+                    ? "#a5d6a7"
+                    : "#f0fff0",
+                  color: isFound(rowIdx, colIdx) ? "white" : "black",
+                }}
+                onMouseDown={() => handleMouseDown(rowIdx, colIdx)}
+                onMouseEnter={() => handleMouseEnter(rowIdx, colIdx)}
+                onMouseUp={handleMouseUp}
+              >
+                {letter}
+              </div>
+            ))}
           </div>
         ))}
       </div>
-
-      {/* Clues */}
-      <div className="mt-8 max-w-lg w-full">
-        <h2 className="text-xl font-semibold text-green-800 mb-4">Clues</h2>
-        <ul className="list-disc list-inside text-green-700">
-          {clues.map((clue, i) => (
-            <li key={i}>
-              {clue.clue} ({clue.direction})
+      <div style={styles.wordsToFind}>
+        <h3>Find these words:</h3>
+        <ul style={{ padding: 0, listStyle: "none" }}>
+          {words.map((word) => (
+            <li
+              key={word}
+              style={{
+                fontWeight: "bold",
+                color: foundWords.includes(word) ? "#4caf50" : "#2e7d32",
+                textDecoration: foundWords.includes(word) ? "line-through" : "none",
+                margin: "4px 0",
+              }}
+            >
+              {word}
             </li>
           ))}
         </ul>
       </div>
-
-      <button
-        onClick={checkAnswers}
-        className="mt-6 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-green-700"
-      >
-        Check Answers
-      </button>
     </div>
   );
 };
 
-export default WasteGame;
+// Inline styles
+const styles: { [key: string]: React.CSSProperties } = {
+  container: {
+    fontFamily: "Arial, sans-serif",
+    textAlign: "center",
+    background: "#e6f2e6",
+    padding: 25,
+    borderRadius: 12,
+    width: "fit-content",
+    margin: "auto",
+    boxShadow: "0 0 20px rgba(0, 128, 0, 0.3)",
+    userSelect: "none",
+  },
+  grid: {
+    display: "inline-block",
+    marginTop: 20,
+  },
+  row: {
+    display: "flex",
+  },
+  cell: {
+    width: 35,
+    height: 35,
+    border: "1px solid #4caf50",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontWeight: "bold",
+    cursor: "pointer",
+    transition: "all 0.2s",
+  },
+  wordsToFind: {
+    marginTop: 25,
+    textAlign: "left",
+  },
+};
+
+export default WordSearch;
