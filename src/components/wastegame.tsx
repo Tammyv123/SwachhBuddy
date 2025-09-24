@@ -19,7 +19,9 @@ const gridSize = 15;
 // Generate empty grid with random letters
 const generateEmptyGrid = (): string[][] => {
   return Array.from({ length: gridSize }, () =>
-    Array.from({ length: gridSize }, () => String.fromCharCode(65 + Math.floor(Math.random() * 26)))
+    Array.from({ length: gridSize }, () =>
+      String.fromCharCode(65 + Math.floor(Math.random() * 26))
+    )
   );
 };
 
@@ -53,6 +55,9 @@ const WordSearch: React.FC = () => {
   const [selection, setSelection] = useState<Position[]>([]);
   const isSelecting = useRef(false);
 
+  // Check if dark mode is active by looking at body class
+  const isDarkMode = document.body.classList.contains("dark");
+
   // Mouse down starts selection
   const handleMouseDown = (row: number, col: number) => {
     isSelecting.current = true;
@@ -80,9 +85,7 @@ const WordSearch: React.FC = () => {
     }
 
     // Construct the selected word
-    const selectedWord = selection
-      .map((pos) => grid[pos.row][pos.col])
-      .join("");
+    const selectedWord = selection.map((pos) => grid[pos.row][pos.col]).join("");
 
     const reversedWord = selectedWord.split("").reverse().join("");
 
@@ -126,7 +129,13 @@ const WordSearch: React.FC = () => {
   };
 
   return (
-    <div style={styles.container}>
+    <div
+      style={{
+        ...styles.container,
+        background: isDarkMode ? "#1a1a1a" : "#e6f2e6", // Dark theme bg
+        color: isDarkMode ? "black" : "black", // Always black text
+      }}
+    >
       <h2>🌱 Waste Segregation Word Search 🌱</h2>
       <div
         style={styles.grid}
@@ -147,7 +156,7 @@ const WordSearch: React.FC = () => {
                     : isSelected(rowIdx, colIdx)
                     ? "#a5d6a7"
                     : "#f0fff0",
-                  color: isFound(rowIdx, colIdx) ? "white" : "black",
+                  color: isFound(rowIdx, colIdx) ? "white" : "black", // ✅ always black (except found word)
                 }}
                 onMouseDown={() => handleMouseDown(rowIdx, colIdx)}
                 onMouseEnter={() => handleMouseEnter(rowIdx, colIdx)}
@@ -167,7 +176,11 @@ const WordSearch: React.FC = () => {
               key={word}
               style={{
                 fontWeight: "bold",
-                color: foundWords.includes(word) ? "#4caf50" : "#2e7d32",
+                color: foundWords.includes(word)
+                  ? "#4caf50"
+                  : isDarkMode
+                  ? "black"
+                  : "#2e7d32",
                 textDecoration: foundWords.includes(word) ? "line-through" : "none",
                 margin: "4px 0",
               }}
@@ -186,7 +199,6 @@ const styles: { [key: string]: React.CSSProperties } = {
   container: {
     fontFamily: "Arial, sans-serif",
     textAlign: "center",
-    background: "#e6f2e6",
     padding: 25,
     borderRadius: 12,
     width: "fit-content",
