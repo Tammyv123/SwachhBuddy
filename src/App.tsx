@@ -35,6 +35,7 @@ import WasteSortingGame from "./components/WasteSortingGame";
 // Games
 import WasteGame from "@/components/wastegame";
 import EcoSorterGame from "@/components/EcoSorterGame";
+import EcoRunner from "@/components/EcoRunner";
 
 // Auth & Protected
 import UserTypeSelection from "./pages/UserTypeSelection";
@@ -112,6 +113,7 @@ const App = () => (
               <Route path="/manage-waste" element={<WasteGame />} />
               <Route path="/eco-sorter-game" element={<EcoSorterGame />} />
               <Route path="/eco-escape-room" element={<EcoEscapeRoom />} />
+              <Route path="/eco-runner-game" element={<EcoRunner />} />
 
               {/* Catch All */}
               <Route path="*" element={<NotFound />} />

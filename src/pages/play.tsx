@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import ManageWaste from "@/components/wastegame";
-import EcoSorterGame from "@/components/EcoSorterGame";  // ✅ Import new game
+import EcoSorterGame from "@/components/EcoSorterGame";
+import EcoRunner from "@/components/EcoRunner"; // ✅ Import new game
 
 const Play = () => {
   const navigate = useNavigate();
@@ -15,7 +16,8 @@ const Play = () => {
     { title: "Waste Sorting Game", component: WasteSortingGame },
     { title: "Eco Escape Room", component: EcoEscapeRoom },
     { title: "Eco Word Search", component: ManageWaste },
-    { title: "Eco Sorter Training", component: EcoSorterGame }, // ✅ Added here
+    { title: "Eco Sorter Training", component: EcoSorterGame },
+    { title: "Eco Runner Game", component: EcoRunner }, // ✅ Added here
   ];
 
   return (
@@ -38,7 +40,8 @@ const Play = () => {
                   else if (game.title === "Waste Sorting Game") navigate("/learning/waste-sorting-game");
                   else if (game.title === "Waste Basics Module") navigate("/learning/waste-basics");
                   else if (game.title === "Eco Word Search") navigate("/manage-waste");
-                  else if (game.title === "Eco Sorter Training") navigate("/eco-sorter-game"); // ✅ new route
+                  else if (game.title === "Eco Sorter Training") navigate("/eco-sorter-game");
+                  else if (game.title === "Eco Runner Game") navigate("/eco-runner-game"); // ✅ new route
                 }}
               >
                 Play Now
