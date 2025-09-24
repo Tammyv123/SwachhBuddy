@@ -41,11 +41,37 @@ const WasteChatbot = () => {
   const dragOffset = useRef({ x: 0, y: 0 });
   const wasDragged = useRef(false);
 
+  // State for the greeting bubble and message dot, now defaulting to false
+  const [showGreetingBubble, setShowGreetingBubble] = useState(false);
+  const [showMessageDot, setShowMessageDot] = useState(false);
+
+
   useEffect(() => {
     const initialX = window.innerWidth - BUBBLE_SIZE - VIEWPORT_PADDING;
     const initialY = window.innerHeight - BUBBLE_SIZE - VIEWPORT_PADDING;
     setPosition({ x: initialX, y: initialY });
   }, []);
+
+  // Effect to show the bubble and dot after a 2-second delay
+  useEffect(() => {
+    const initialTimer = setTimeout(() => {
+      setShowGreetingBubble(true);
+      setShowMessageDot(true);
+    }, 2000); // 2-second delay before popping up
+
+    return () => clearTimeout(initialTimer);
+  }, []);
+
+  // Effect to automatically hide the greeting bubble after it has been shown for 60 seconds
+  useEffect(() => {
+    if (showGreetingBubble) {
+      const autoDismissTimer = setTimeout(() => {
+        setShowGreetingBubble(false);
+      }, 60000); // 60 seconds
+
+      return () => clearTimeout(autoDismissTimer);
+    }
+  }, [showGreetingBubble]);
   
   useEffect(() => {
     if (isOpen) {
@@ -76,6 +102,9 @@ const WasteChatbot = () => {
         setTimeout(() => {
             if (!wasDragged.current) {
                 setIsOpen(true);
+                // On click, hide the message dot and the greeting bubble
+                setShowMessageDot(false);
+                setShowGreetingBubble(false);
             }
         }, 0);
     };
@@ -114,8 +143,6 @@ const WasteChatbot = () => {
     setInputMessage('');
     setIsLoading(true);
 
-    // New, more powerful instructions for the AI for  precise answer
-    
     const instructions = `
       You are EcoBuddy, an expert assistant for waste management. 
       Your primary rules are:
@@ -167,23 +194,42 @@ const WasteChatbot = () => {
 
   if (!isOpen) {
     return (
-      <Button
-        onMouseDown={handleMouseDown}
-        className="fixed h-14 w-14 rounded-full shadow-lg z-50 p-0 cursor-grab active:cursor-grabbing"
-        size="icon"
-        variant="ghost"
+      <div
+        className="fixed z-50"
         style={{
           top: position.y,
           left: position.x,
         }}
       >
-        <img
-          src="/chatbot.png"
-          alt="EcoBuddy Chat Icon"
-          className="h-20 w-20 rounded-full object-cover"
-          style={{ pointerEvents: 'none' }}
-        />
-      </Button>
+        {/* Greeting Bubble */}
+        {showGreetingBubble && (
+          <div className="absolute bottom-0 right-full mr-4 w-max max-w-[250px] bg-card text-card-foreground p-3 rounded-lg shadow-lg animate-in fade-in slide-in-from-left-2 duration-500">
+            <p className="text-sm font-medium">Hello! 👋</p>
+            <p className="text-sm text-muted-foreground">
+              Need help with waste management?
+            </p>
+            {/* Bubble Tail */}
+            <div className="absolute right-[-8px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-8 border-l-card" />
+          </div>
+        )}
+        <Button
+          onMouseDown={handleMouseDown}
+          className="relative h-14 w-14 rounded-full shadow-lg p-0 cursor-grab active:cursor-grabbing"
+          size="icon"
+          variant="ghost"
+        >
+          {/* Message Dot */}
+          {showMessageDot && (
+            <span className="absolute top-0 right-0 block h-3.5 w-3.5 rounded-full bg-red-500 ring-2 ring-white" />
+          )}
+          <img
+            src="/chatbot.png"
+            alt="EcoBuddy Chat Icon"
+            className="h-20 w-20 rounded-full object-cover"
+            style={{ pointerEvents: 'none' }}
+          />
+        </Button>
+      </div>
     );
   }
 
