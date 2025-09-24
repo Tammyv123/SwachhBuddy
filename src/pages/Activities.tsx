@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { 
-  Card, CardHeader, CardTitle, CardDescription, CardContent 
+import {
+  Card, CardHeader, CardTitle, CardDescription, CardContent
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
+import {
   Calendar, Clock, MapPin, Users, Leaf
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -127,21 +127,25 @@ export default function Activities() {
                 placeholder="Event Title"
                 value={newEvent.title}
                 onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded text-black placeholder:text-gray-400"
               />
+
+              {/* Updated datetime input */}
               <input
                 type="datetime-local"
                 value={newEvent.date}
                 onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
-                className="w-full p-2 border rounded"
+                className={`w-full p-2 border rounded ${newEvent.date ? 'text-black' : 'text-gray-400'}`}
               />
+
               <input
                 type="text"
                 placeholder="Location"
                 value={newEvent.location}
                 onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded text-black placeholder:text-gray-400"
               />
+
               <Button type="submit" className="w-full">Create Event</Button>
             </form>
           </CardContent>
