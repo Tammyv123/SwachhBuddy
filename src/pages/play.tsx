@@ -14,7 +14,6 @@ const Play = () => {
   const navigate = useNavigate();
 
   const games = [
-    { title: "Waste Basics Module", component: WasteBasicsModule },
     { title: "Waste Sorting Game", component: WasteSortingGame },
     { title: "Eco Escape Room", component: EcoEscapeRoom },
     { title: "Eco Word Search", component: ManageWaste },
@@ -41,7 +40,6 @@ const Play = () => {
                 onClick={() => {
                   if (game.title === "Eco Escape Room") navigate("/eco-escape-room");
                   else if (game.title === "Waste Sorting Game") navigate("/learning/waste-sorting-game");
-                  else if (game.title === "Waste Basics Module") navigate("/learning/waste-basics");
                   else if (game.title === "Eco Word Search") navigate("/manage-waste");
                   else if (game.title === "Eco Sorter Training") navigate("/eco-sorter-game");
                   else if (game.title === "Eco Runner Game") navigate("/eco-runner-game");
