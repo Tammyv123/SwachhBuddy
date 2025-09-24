@@ -25,7 +25,7 @@ const EcoRunner: React.FC = () => {
 
       preload() {
         // 🌿 Background image (eco-friendly sky)
-        this.load.image("background", "https://labs.phaser.io/assets/skies/sky4.png");
+        this.load.image("background", "/src/asset/bg.jpg");
 
         // Ground and player 
         this.load.image("ground", "https://labs.phaser.io/assets/sprites/platform.png");
