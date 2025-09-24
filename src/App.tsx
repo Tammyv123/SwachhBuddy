@@ -36,6 +36,8 @@ import WasteSortingGame from "./components/WasteSortingGame";
 import WasteGame from "@/components/wastegame";
 import EcoSorterGame from "@/components/EcoSorterGame";
 import EcoRunner from "@/components/EcoRunner";
+import EcoMario from "@/components/EcoMario"; // ✅ Import new game
+
 
 // Auth & Protected
 import UserTypeSelection from "./pages/UserTypeSelection";
@@ -66,7 +68,7 @@ const App = () => (
             {/* All pages wrapped in Layout for Navbar + Footer */}
             <Route element={<Layout />}>
               {/* Landing Page */}
-              <Route path="/" element={<Landing onUserTypeSelect={() => {}} />} />
+              <Route path="/" element={<Landing onUserTypeSelect={() => { }} />} />
 
               {/* Main Pages */}
               <Route path="/play" element={<Play />} />
@@ -114,6 +116,8 @@ const App = () => (
               <Route path="/eco-sorter-game" element={<EcoSorterGame />} />
               <Route path="/eco-escape-room" element={<EcoEscapeRoom />} />
               <Route path="/eco-runner-game" element={<EcoRunner />} />
+              <Route path="/eco-mario-game" element={<EcoMario />} />
+
 
               {/* Catch All */}
               <Route path="*" element={<NotFound />} />

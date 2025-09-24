@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import ManageWaste from "@/components/wastegame";
 import EcoSorterGame from "@/components/EcoSorterGame";
 import EcoRunner from "@/components/EcoRunner"; // ✅ Import new game
+import EcoMario from "@/components/EcoMario"; // ✅ Import new game
+
 
 const Play = () => {
   const navigate = useNavigate();
@@ -17,7 +19,8 @@ const Play = () => {
     { title: "Eco Escape Room", component: EcoEscapeRoom },
     { title: "Eco Word Search", component: ManageWaste },
     { title: "Eco Sorter Training", component: EcoSorterGame },
-    { title: "Eco Runner Game", component: EcoRunner }, // ✅ Added here
+    { title: "Eco Runner Game", component: EcoRunner },
+    { title: "Eco Mario Game", component: EcoMario }, // ✅ Added here
   ];
 
   return (
@@ -41,7 +44,9 @@ const Play = () => {
                   else if (game.title === "Waste Basics Module") navigate("/learning/waste-basics");
                   else if (game.title === "Eco Word Search") navigate("/manage-waste");
                   else if (game.title === "Eco Sorter Training") navigate("/eco-sorter-game");
-                  else if (game.title === "Eco Runner Game") navigate("/eco-runner-game"); // ✅ new route
+                  else if (game.title === "Eco Runner Game") navigate("/eco-runner-game");
+                  else if (game.title === "Eco Mario Game") navigate("/eco-mario-game"); // ✅ new route
+                  // ✅ new route
                 }}
               >
                 Play Now
