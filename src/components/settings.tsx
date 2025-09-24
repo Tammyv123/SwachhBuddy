@@ -11,6 +11,7 @@ const Settings = () => {
         Customize your preferences to make your experience more eco-friendly and sustainable.
       </p>
 
+      {/* hiiii */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Theme */}
         <Card className="bg-green-100">
