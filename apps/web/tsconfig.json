@@ -1,10 +1,23 @@
 {
-    "extends": "../../packages/configs/tsconfig.next.json",
-    "compilerOptions": {
-        "paths": {
-            "@/*": ["./*"]
-        }
+  "extends": "../../packages/configs/tsconfig.next.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
     },
-    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-    "exclude": ["node_modules"]
+    "skipLibCheck": true,
+    "strict": false,
+    "esModuleInterop": true,
+    "isolatedModules": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

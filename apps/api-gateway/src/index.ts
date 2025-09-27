@@ -11,9 +11,7 @@ dotenv.config({ quiet: true })
 const app = express()
 const PORT = Number(process.env.PORT) || 8000
 const HOST = process.env.HOST || 'localhost'
-
-// requestLogger, cors, cookieParser, express.json, express.urlencoded
-setupDefaultMiddlewares(app)
+const PROTOCOL = process.env.PROTOCOL || 'http'
 
 // Rate limiting middleware
 const limit = rateLimit({
@@ -31,6 +29,8 @@ app.use(
     })
 )
 
+// requestLogger, cors, cookieParser, express.json, express.urlencoded
+setupDefaultMiddlewares(app)
 app.use(limit)
 
 // Health check route
@@ -39,10 +39,15 @@ app.get('/health', (req, res) => {
 })
 
 // Proxy routes
-app.use('/auth', proxy('http://localhost:8001')) // Auth Service
+app.use(
+    '/auth',
+    proxy('http://localhost:6001', {
+        proxyReqPathResolver: (req) => '/auth' + req.url,
+    })
+)
 
 const server = app.listen(PORT, HOST, () => {
-    logger.info(`API Gateway is running on http://${HOST}:${PORT}`)
+    logger.info(`API Gateway is running on ${PROTOCOL}://${HOST}:${PORT}`)
 })
 
 server.on('error', console.error)
