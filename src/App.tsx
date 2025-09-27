@@ -38,13 +38,13 @@ import EcoSorterGame from "@/components/EcoSorterGame";
 import EcoRunner from "@/components/EcoRunner";
 import EcoMario from "@/components/EcoMario"; // ✅ Import new game
 
-
 // Auth & Protected
 import UserTypeSelection from "./pages/UserTypeSelection";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
+import CDashboard from "./pages/Dashboard/CDashboard";
+import EDashboard from "./pages/Dashboard/EDashboard";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 // Other Components
@@ -97,16 +97,38 @@ const App = () => (
 
               {/* User Type & Auth */}
               <Route path="/get-started" element={<UserTypeSelection />} />
-              <Route path="/login" element={<ProtectedRoute requireAuth={false}><Login /></ProtectedRoute>} />
-              <Route path="/signup" element={<ProtectedRoute requireAuth={false}><Signup /></ProtectedRoute>} />
+              <Route
+                path="/login"
+                element={
+                  <ProtectedRoute requireAuth={false}>
+                    <Login />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/signup"
+                element={
+                  <ProtectedRoute requireAuth={false}>
+                    <Signup />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/auth" element={<Auth />} />
 
-              {/* Dashboard */}
+              {/* Dashboards */}
               <Route
-                path="/dashboard"
+                path="/dashboard/corporate"
                 element={
                   <ProtectedRoute requireAuth={true}>
-                    <Dashboard />
+                    <CDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/enduser"
+                element={
+                  <ProtectedRoute requireAuth={true}>
+                    <EDashboard />
                   </ProtectedRoute>
                 }
               />
@@ -117,7 +139,6 @@ const App = () => (
               <Route path="/eco-escape-room" element={<EcoEscapeRoom />} />
               <Route path="/eco-runner-game" element={<EcoRunner />} />
               <Route path="/eco-mario-game" element={<EcoMario />} />
-
 
               {/* Catch All */}
               <Route path="*" element={<NotFound />} />
