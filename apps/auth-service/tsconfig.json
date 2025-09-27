@@ -1,0 +1,19 @@
+{
+    "extends": "../../packages/configs/tsconfig.node.json",
+    "compilerOptions": {
+        "target": "es2022",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "outDir": "./dist",
+        "rootDir": "./src"
+    },
+    "include": ["src"],
+    "references": [
+        { "path": "../../packages/middlewares" },
+        { "path": "../../packages/utils" }
+    ]
+}

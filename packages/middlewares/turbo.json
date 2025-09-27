@@ -1,0 +1,9 @@
+{
+    "extends": ["@swachhbuddy/configs/turbo.base.json"],
+    "tasks": {
+        "build": {
+            "dependsOn": ["^build"],
+            "outputs": [".next/**", "!.next/cache/**", "build/**", "dist/**"]
+        }
+    }
+}
