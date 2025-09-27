@@ -12,8 +12,5 @@
         "moduleResolution": "node"
     },
     "include": ["src"],
-    "references": [
-        { "path": "../../packages/middlewares" },
-        { "path": "../../packages/utils" }
-    ]
+    "references": [{ "path": "../../packages/middlewares" }, { "path": "../../packages/utils" }]
 }

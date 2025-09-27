@@ -1,7 +1,8 @@
 {
     "extends": "../configs/tsconfig.node.json",
     "compilerOptions": {
-        "outDir": "dist"
+        "outDir": "dist",
+        "composite": true
     },
     "include": ["src"],
     "exclude": ["node_modules", "dist"],

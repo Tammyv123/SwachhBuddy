@@ -34,7 +34,7 @@ setupDefaultMiddlewares(app)
 app.use(limit)
 
 // Health check route
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
     res.json({ status: 200, message: 'API Gateway is healthy' })
 })
 
