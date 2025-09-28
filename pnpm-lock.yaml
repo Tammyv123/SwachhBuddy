@@ -38,6 +38,9 @@ importers:
       express-rate-limit:
         specifier: ^8.1.0
         version: 8.1.0(express@5.1.0)
+      jsonwebtoken:
+        specifier: ^9.0.2
+        version: 9.0.2
       winston:
         specifier: ^3.17.0
         version: 3.17.0
