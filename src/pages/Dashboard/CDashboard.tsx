@@ -1,6 +1,6 @@
-// src/pages/Dashboard.tsx
+// src/pages/Dashboard/CDashboard.tsx
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,7 +16,6 @@ import {
   Truck,
   Camera,
   Calendar,
-
   GraduationCap,
   Gamepad2,
   Users,
@@ -26,49 +25,37 @@ import { useToast } from "@/hooks/use-toast";
 import RewardsSystem from "@/components/RewardsSystem";
 import { useAuth } from "@/hooks/use-auth";
 import QRScanner from "@/components/QRScanner";
-import WasteTracking from "@/components/WasteTracking";
 import ReportingSystem from "@/components/ReportingSystem";
 import EWasteDay from "@/components/EWasteDay";
 import WasteChatbot from "@/components/WasteChatbot";
-import Activities from "../Activities";
-
+import Activities from "../Activities"; // Corrected relative path
 import { usePoints } from "@/contexts/PointsContext";
 import { FiHome, FiActivity, FiBook, FiAward } from "react-icons/fi";
 import { Progress } from "@/components/ui/progress";
 import SchedulePickup from "@/components/SchedulePickup";
 
-const EDashboard: React.FC = () => {
+const CDashboard = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
-
-
   const { coins, earn, redeem } = usePoints();
-
 
   const [streak] = useState<number>(0);
   const [weeklyGoal] = useState<number>(500);
   const [weeklyProgress, setWeeklyProgress] = useState<number>(0);
   const [showRewards, setShowRewards] = useState(false);
-
-
   const [showQRScanner, setShowQRScanner] = useState(false);
-  const [showWasteTracking, setShowWasteTracking] = useState(false);
   const [showReporting, setShowReporting] = useState(false);
   const [showEWasteDay, setShowEWasteDay] = useState(false);
   const [showSchedulePickup, setShowSchedulePickup] = useState(false);
 
-
-  
-  const handlePointsEarnedWrapper = (points: number, meta?: { source?: string }) => {
-
+  const handlePointsEarnedWrapper = (points: number, meta: any) => {
     earn(points, meta);
   };
 
   const handlePointsRedeemedWrapper = (points: number) => {
     redeem(points);
   };
-
-  
 
   const leaderboardData = [
     { rank: 1, name: "Priya Sharma", points: 2850, district: "Mumbai" },
@@ -166,83 +153,56 @@ const EDashboard: React.FC = () => {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            {/* Quick Actions horizontal scroll */}
             <div>
               <h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
               <div className="flex space-x-6 overflow-x-auto py-2">
-                {/* Scan QR Code */}
-                <Card className="cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all flex-shrink-0 w-64"
-                  onClick={() => setShowQRScanner(true)}>
+                <Card className="cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all flex-shrink-0 w-64" onClick={() => setShowQRScanner(true)}>
                   <CardContent className="p-6 flex flex-col items-center text-center space-y-3">
                     <div className="p-3 rounded-full bg-primary/10 text-primary">
                       <QrCode className="h-7 w-7" />
                     </div>
                     <h3 className="font-semibold">Scan QR Code</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Verify waste disposal (+25 pts)
-                    </p>
+                    <p className="text-sm text-muted-foreground">Verify waste disposal (+25 pts)</p>
                   </CardContent>
                 </Card>
-
-                {/* Track Waste Truck */}
-                <Card className="cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all flex-shrink-0 w-64"
-                  onClick={() => setShowWasteTracking(true)}>
+                <Card className="cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all flex-shrink-0 w-64" onClick={() => navigate('/live-map')}>
                   <CardContent className="p-6 flex flex-col items-center text-center space-y-3">
                     <div className="p-3 rounded-full bg-primary/10 text-primary">
                       <Truck className="h-7 w-7" />
                     </div>
                     <h3 className="font-semibold">Track Waste Truck</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Locate collection vehicles
-                    </p>
+                    <p className="text-sm text-muted-foreground">Locate collection vehicles</p>
                   </CardContent>
                 </Card>
-
-                {/* Report Issue */}
-                <Card className="cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all flex-shrink-0 w-64"
-                  onClick={() => setShowReporting(true)}>
+                <Card className="cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all flex-shrink-0 w-64" onClick={() => setShowReporting(true)}>
                   <CardContent className="p-6 flex flex-col items-center text-center space-y-3">
                     <div className="p-3 rounded-full bg-primary/10 text-primary">
                       <Camera className="h-7 w-7" />
                     </div>
                     <h3 className="font-semibold">Report Issue</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Report missed collection (+50 pts)
-                    </p>
+                    <p className="text-sm text-muted-foreground">Report missed collection (+50 pts)</p>
                   </CardContent>
                 </Card>
-
-                {/* Schedule Pickup NEW */}
-                <Card className="cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all flex-shrink-0 w-64"
-                  onClick={() => setShowSchedulePickup(true)}>
+                <Card className="cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all flex-shrink-0 w-64" onClick={() => setShowSchedulePickup(true)}>
                   <CardContent className="p-6 flex flex-col items-center text-center space-y-3">
                     <div className="p-3 rounded-full bg-primary/10 text-primary">
                       <Calendar className="h-7 w-7" />
                     </div>
                     <h3 className="font-semibold">Schedule Pickup</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Book a waste pickup from your home
-                    </p>
+                    <p className="text-sm text-muted-foreground">Book a waste pickup from your home</p>
                   </CardContent>
                 </Card>
-
-                {/* E-Waste Day */}
-                <Card className="cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all flex-shrink-0 w-64"
-                  onClick={() => setShowEWasteDay(true)}>
+                <Card className="cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all flex-shrink-0 w-64" onClick={() => setShowEWasteDay(true)}>
                   <CardContent className="p-6 flex flex-col items-center text-center space-y-3">
                     <div className="p-3 rounded-full bg-primary/10 text-primary">
                       <Calendar className="h-7 w-7" />
                     </div>
                     <h3 className="font-semibold">E-Waste Day</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Join monthly collection (+75 pts)
-                    </p>
+                    <p className="text-sm text-muted-foreground">Join monthly collection (+75 pts)</p>
                   </CardContent>
                 </Card>
               </div>
             </div>
-
-            {/* Points Legend & Weekly Progress */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
@@ -257,7 +217,6 @@ const EDashboard: React.FC = () => {
                   </div>
                 </CardContent>
               </Card>
-
               <Card>
                 <CardHeader>
                   <CardTitle>Weekly Progress</CardTitle>
@@ -274,7 +233,6 @@ const EDashboard: React.FC = () => {
                 </CardContent>
               </Card>
             </div>
-
             <Card>
               <CardHeader>
                 <CardTitle>Recent Achievements</CardTitle>
@@ -284,8 +242,7 @@ const EDashboard: React.FC = () => {
                   <div className="p-3 bg-success/10 rounded">Sign Up — Account created</div>
                 </div>
               </CardContent>
-          </Card>
-
+            </Card>
           </TabsContent>
 
           <TabsContent value="activities">
@@ -295,9 +252,7 @@ const EDashboard: React.FC = () => {
           <TabsContent value="learning" className="space-y-6">
             <div className="text-center mb-6">
               <h2 className="text-2xl font-semibold mb-2">Continue Learning</h2>
-              <p className="text-muted-foreground">
-                Access comprehensive waste management education and interactive games
-              </p>
+              <p className="text-muted-foreground">Access comprehensive waste management education and interactive games</p>
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               <Card className="hover:shadow-lg transition-shadow">
@@ -306,9 +261,7 @@ const EDashboard: React.FC = () => {
                     <GraduationCap className="mr-2 h-5 w-5" />
                     Core Training
                   </CardTitle>
-                  <CardDescription>
-                    Complete the 3-level mandatory training program
-                  </CardDescription>
+                  <CardDescription>Complete the 3-level mandatory training program</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
@@ -329,9 +282,7 @@ const EDashboard: React.FC = () => {
                     <Gamepad2 className="mr-2 h-5 w-5" />
                     Learning Games
                   </CardTitle>
-                  <CardDescription>
-                    Play interactive games to reinforce knowledge
-                  </CardDescription>
+                  <CardDescription>Play interactive games to reinforce knowledge</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
@@ -355,9 +306,7 @@ const EDashboard: React.FC = () => {
                     <Users className="mr-2 h-5 w-5" />
                     Specialized Courses
                   </CardTitle>
-                  <CardDescription>
-                    Role-specific training for user type
-                  </CardDescription>
+                  <CardDescription>Role-specific training for user type</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
@@ -433,18 +382,12 @@ const EDashboard: React.FC = () => {
       <QRScanner
         isOpen={showQRScanner}
         onClose={() => setShowQRScanner(false)}
-        onPointsEarned={(pts: number) => handlePointsEarnedWrapper(pts, { source: "QR" })}
+        onPointsEarned={(pts) => handlePointsEarnedWrapper(pts, { source: "QR" })}
       />
-
-      <WasteTracking
-        isOpen={showWasteTracking}
-        onClose={() => setShowWasteTracking(false)}
-      />
-
       <ReportingSystem
         isOpen={showReporting}
         onClose={() => setShowReporting(false)}
-        onPointsEarned={(pts: number) => handlePointsEarnedWrapper(pts, { source: "Report" })}
+        onPointsEarned={(pts) => handlePointsEarnedWrapper(pts, { source: "Report" })}
       />
       <SchedulePickup
         isOpen={showSchedulePickup}
@@ -454,7 +397,6 @@ const EDashboard: React.FC = () => {
         isOpen={showEWasteDay}
         onClose={() => setShowEWasteDay(false)}
       />
-
       <WasteChatbot />
 
       {showRewards && (
@@ -467,7 +409,7 @@ const EDashboard: React.FC = () => {
             <div style={{ minHeight: 600 }}>
               <RewardsSystem
                 onBack={() => setShowRewards(false)}
-                onRedeem={(points: number) => handlePointsRedeemedWrapper(points)}
+                onRedeem={(points) => handlePointsRedeemedWrapper(points)}
               />
             </div>
           </div>
@@ -477,4 +419,4 @@ const EDashboard: React.FC = () => {
   );
 };
 
-export default EDashboard;
+export default CDashboard;
