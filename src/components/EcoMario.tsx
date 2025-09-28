@@ -559,7 +559,7 @@ export default function EcoMario() {
         if(p.type === 'G') PlatformComponent = <div style={{width: TILE_SIZE, height: TILE_SIZE, background: '#16A34A', borderBottom: '4px solid #14532D', borderRight: '2px solid #14532D'}}/>;
         else if(p.type === 'D') PlatformComponent = <div style={{width: TILE_SIZE, height: TILE_SIZE, background: '#A16207'}}/>;
         else if(p.type === 'B') PlatformComponent = <BrickBlock />;
-        else if(p.type === 'P') PlatformComponent = <div style={{width: TILE_SIZE, height: TILE_SIZE, background: '#0EA5E9' }}/>
+        else if(p.type === 'P') PlatformComponent = <div style={{width: TILE_SIZE, height: TILE_SIZE, background: '#11194bff' }}/>
         else if(p.type === 'S') PlatformComponent = <div style={{width: TILE_SIZE, height: TILE_SIZE, background: '#475569', border: '2px solid #1E293B' }}/>
         
         return <div key={p.id} className="absolute" style={{ left: p.position.x, top: p.position.y }}>{PlatformComponent}</div>

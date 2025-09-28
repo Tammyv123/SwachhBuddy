@@ -1,6 +1,6 @@
 // src/pages/Dashboard.tsx
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -26,7 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import RewardsSystem from "@/components/RewardsSystem";
 import { useAuth } from "@/hooks/use-auth";
 import QRScanner from "@/components/QRScanner";
-import WasteTracking from "@/components/WasteTracking";
+// import WasteTracking from "@/components/WasteTracking";
 import ReportingSystem from "@/components/ReportingSystem";
 import EWasteDay from "@/components/EWasteDay";
 import WasteChatbot from "@/components/WasteChatbot";
@@ -38,6 +38,7 @@ import { Progress } from "@/components/ui/progress";
 import SchedulePickup from "@/components/SchedulePickup";
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -52,13 +53,13 @@ const Dashboard: React.FC = () => {
 
 
   const [showQRScanner, setShowQRScanner] = useState(false);
-  const [showWasteTracking, setShowWasteTracking] = useState(false);
+  // const [showWasteTracking, setShowWasteTracking] = useState(false);
   const [showReporting, setShowReporting] = useState(false);
   const [showEWasteDay, setShowEWasteDay] = useState(false);
   const [showSchedulePickup, setShowSchedulePickup] = useState(false);
 
 
-  
+
   const handlePointsEarnedWrapper = (points: number, meta?: { source?: string }) => {
 
     earn(points, meta);
@@ -68,7 +69,7 @@ const Dashboard: React.FC = () => {
     redeem(points);
   };
 
-  
+
 
   const leaderboardData = [
     { rank: 1, name: "Priya Sharma", points: 2850, district: "Mumbai" },
@@ -186,7 +187,7 @@ const Dashboard: React.FC = () => {
 
                 {/* Track Waste Truck */}
                 <Card className="cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all flex-shrink-0 w-64"
-                  onClick={() => setShowWasteTracking(true)}>
+                  onClick={() => navigate('/live-map')}>
                   <CardContent className="p-6 flex flex-col items-center text-center space-y-3">
                     <div className="p-3 rounded-full bg-primary/10 text-primary">
                       <Truck className="h-7 w-7" />
@@ -284,7 +285,7 @@ const Dashboard: React.FC = () => {
                   <div className="p-3 bg-success/10 rounded">Sign Up — Account created</div>
                 </div>
               </CardContent>
-          </Card>
+            </Card>
 
           </TabsContent>
 
@@ -436,10 +437,10 @@ const Dashboard: React.FC = () => {
         onPointsEarned={(pts: number) => handlePointsEarnedWrapper(pts, { source: "QR" })}
       />
 
-      <WasteTracking
+      {/* <WasteTracking
         isOpen={showWasteTracking}
         onClose={() => setShowWasteTracking(false)}
-      />
+      /> */}
 
       <ReportingSystem
         isOpen={showReporting}

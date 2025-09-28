@@ -25,6 +25,8 @@ import UserProfile from "./components/UserProfile";
 import Certifications from "./components/Certifications";
 import RewardsSystem from "./components/RewardsSystem";
 import Settings from "./components/settings";
+import MapDashboard from "./components/MapDashboard";
+
 
 // Learning Pages
 import Learning from "./pages/Learning";
@@ -82,6 +84,8 @@ const App = () => (
               <Route path="/rewards-system" element={<RewardsSystemLanding />} />
               <Route path="/transparency" element={<Transparency />} />
               <Route path="/digital-first" element={<DigitalFirst />} />
+
+              <Route path="/live-map" element={<MapDashboard />} /> {/* 2. ADD THE NEW ROUTE */}
 
               {/* Navbar-linked pages */}
               <Route path="/profile" element={<UserProfile userData={{}} />} />
