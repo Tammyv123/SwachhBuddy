@@ -86,7 +86,7 @@ const Navbar = ({ onNavigate }: NavbarProps) => {
   const navLinks = [
     { path: "/", label: "Home", icon: Home },
     {
-      path: user ? "/dashboard" : "/signup",
+      path: user ? "/dashboard/corporate" : "/signup",
       label: "Dashboard",
       icon: LayoutDashboard,
     },
@@ -135,9 +135,8 @@ const Navbar = ({ onNavigate }: NavbarProps) => {
                 variant="ghost"
                 size="sm"
                 onClick={() => handleNavigation(path)}
-                className={`flex items-center gap-2 ${
-                  location.pathname === path ? "text-primary font-semibold" : ""
-                }`}
+                className={`flex items-center gap-2 ${location.pathname === path ? "text-primary font-semibold" : ""
+                  }`}
               >
                 <Icon className="h-4 w-4" />
                 {label}
@@ -271,9 +270,8 @@ const Navbar = ({ onNavigate }: NavbarProps) => {
               variant="ghost"
               size="sm"
               onClick={() => handleNavigation(path)}
-              className={`flex items-center gap-2 justify-start ${
-                location.pathname === path ? "text-primary font-semibold" : ""
-              }`}
+              className={`flex items-center gap-2 justify-start ${location.pathname === path ? "text-primary font-semibold" : ""
+                }`}
             >
               <Icon className="h-4 w-4" />
               {label}
