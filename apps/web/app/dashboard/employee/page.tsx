@@ -19,7 +19,6 @@ import {
   Check,
 } from 'lucide-react'
 import Link from 'next/link'
-import QrScanner from 'react-qr-scanner'
 
 interface User {
   id: string
@@ -70,16 +69,7 @@ export default function EmployeeDashboard() {
     setShowSuccess(false)
   }
 
-  const handlePointsEarned = (points: number) => {
-    // Handle points earned from scanning
-    console.log(`Points earned: ${points}`)
-    setShowSuccess(true)
-    setTimeout(() => setShowSuccess(false), 3000)
-  }
 
-  const handleCloseScanner = () => {
-    setShowScanner(false)
-  }
 
   const handlePickupRequest = async (requestId: string, status: 'accepted' | 'rejected') => {
     // Here you would make an API call to update the request status
@@ -262,19 +252,24 @@ export default function EmployeeDashboard() {
               <CardDescription>Create QR code for recording recycled items</CardDescription>
             </CardHeader>
             <CardContent>
-              {showScanner ? (
-                <div className='relative'>
-                  <QrScanner
-                    delay={300}
-                    onError={handleError}
-                    onScan={handleScan}
-                    style={{ width: '100%' }}
-                  />
+              {qrData ? (
+                <div className='text-center'>
+                  <div className='p-4 bg-green-50 text-green-700 rounded-lg mb-4'>
+                    <CheckCircle className='h-12 w-12 mx-auto mb-2' />
+                    <p className='font-medium'>QR Code Generated!</p>
+                  </div>
+                  <div className='mb-4 p-4 border-2 border-dashed border-gray-200 rounded-lg'>
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrData)}`}
+                      alt="Disposal QR Code"
+                      className='mx-auto'
+                    />
+                  </div>
                   <Button
-                    onClick={() => setShowScanner(false)}
-                    className='absolute top-2 right-2 bg-red-500 hover:bg-red-600'
+                    onClick={handleReset}
+                    className='bg-blue-500 hover:bg-blue-600'
                   >
-                    Close Scanner
+                    Generate New QR Code
                   </Button>
                 </div>
               ) : (
