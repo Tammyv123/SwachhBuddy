@@ -8,19 +8,18 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import {
   Truck,
-  MapPin,
   Clock,
   CheckCircle,
   AlertTriangle,
-  Users,
   Calendar,
-  Target,
   TrendingUp,
   Route,
-  Award,
-  BarChart3,
+  Scan,
+  X,
+  Check,
 } from 'lucide-react'
 import Link from 'next/link'
+import QrScanner from 'react-qr-scanner'
 
 interface User {
   id: string
@@ -30,19 +29,42 @@ interface User {
   userType: string
 }
 
-interface Assignment {
+interface PickupRequest {
   id: string
-  area: string
-  status: 'pending' | 'in-progress' | 'completed'
-  priority: 'high' | 'medium' | 'low'
-  estimatedTime: string
+  address: string
+  status: 'pending' | 'accepted' | 'rejected'
+  requestTime: string
   wasteType: string
+  citizenName: string
 }
 
 export default function EmployeeDashboard() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [showScanner, setShowScanner] = useState(false)
+  const [scanResult, setResult] = useState('')
+  const [showSuccess, setShowSuccess] = useState(false)
   const router = useRouter()
+
+  const handleScan = (data: any) => {
+    if (data) {
+      setResult(data)
+      setShowScanner(false)
+      setShowSuccess(true)
+      // Here you would typically make an API call to record the garbage disposal
+      setTimeout(() => setShowSuccess(false), 3000)
+    }
+  }
+
+  const handleError = (err: any) => {
+    console.error(err)
+  }
+
+  const handlePickupRequest = async (requestId: string, status: 'accepted' | 'rejected') => {
+    // Here you would make an API call to update the request status
+    console.log(`Request ${requestId} ${status}`)
+    // Update the UI accordingly
+  }
 
   useEffect(() => {
     // Check for user data
@@ -99,118 +121,33 @@ export default function EmployeeDashboard() {
     efficiency: 87,
   }
 
-  const todayAssignments: Assignment[] = [
+  // Mock pickup requests
+  const pickupRequests: PickupRequest[] = [
     {
       id: '1',
-      area: 'Sector 15, Dwarka',
-      status: 'completed',
-      priority: 'high',
-      estimatedTime: '09:00 AM',
+      address: 'Block A, Sector 15, Dwarka',
+      status: 'pending',
+      requestTime: '30 mins ago',
       wasteType: 'Mixed Waste',
+      citizenName: 'Rajesh Kumar'
     },
     {
       id: '2',
-      area: 'Connaught Place',
-      status: 'in-progress',
-      priority: 'high',
-      estimatedTime: '11:30 AM',
-      wasteType: 'E-Waste',
+      address: 'C-45, Connaught Place',
+      status: 'pending',
+      requestTime: '1 hour ago',
+      wasteType: 'Organic Waste',
+      citizenName: 'Priya Singh'
     },
     {
       id: '3',
-      area: 'Lajpat Nagar Market',
+      address: 'Shop 12, Lajpat Nagar Market',
       status: 'pending',
-      priority: 'medium',
-      estimatedTime: '02:00 PM',
-      wasteType: 'Organic Waste',
-    },
-    {
-      id: '4',
-      area: 'Karol Bagh',
-      status: 'pending',
-      priority: 'low',
-      estimatedTime: '04:30 PM',
+      requestTime: '2 hours ago',
       wasteType: 'Recyclable',
-    },
-  ]
-
-  const recentActivities = [
-    {
-      type: 'collection',
-      description: 'Completed waste collection at Sector 15',
-      time: '10:30 AM',
-      amount: '28.5 kg',
-    },
-    {
-      type: 'route',
-      description: 'Optimized route for afternoon pickups',
-      time: '09:15 AM',
-      efficiency: '+12%',
-    },
-    {
-      type: 'report',
-      description: 'Submitted daily collection report',
-      time: 'Yesterday',
-      status: 'approved',
-    },
-  ]
-
-  const quickActions = [
-    {
-      title: 'View Route',
-      description: "Today's optimized route",
-      icon: <Route className='h-5 w-5' />,
-      link: '/employee/route',
-      color: 'bg-blue-500',
-    },
-    {
-      title: 'Manage Tasks',
-      description: 'View and update assignments',
-      icon: <CheckCircle className='h-5 w-5' />,
-      link: '/employee/tasks',
-      color: 'bg-green-500',
-    },
-    {
-      title: 'Performance',
-      description: 'Track your metrics',
-      icon: <TrendingUp className='h-5 w-5' />,
-      link: '/employee/performance',
-      color: 'bg-purple-500',
-    },
-    {
-      title: 'Report Issue',
-      description: 'Report collection problems',
-      icon: <AlertTriangle className='h-5 w-5' />,
-      link: '/employee/report',
-      color: 'bg-red-500',
-    },
-  ]
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'bg-green-100 text-green-800'
-      case 'in-progress':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'pending':
-        return 'bg-gray-100 text-gray-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
+      citizenName: 'Amit Sharma'
     }
-  }
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high':
-        return 'bg-red-100 text-red-800'
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'low':
-        return 'bg-green-100 text-green-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
+  ]
 
   return (
     <div className='min-h-screen bg-gray-50'>
@@ -224,10 +161,10 @@ export default function EmployeeDashboard() {
             </div>
             <div className='flex items-center space-x-4'>
               <span className='text-gray-700'>Welcome, {user.firstName}!</span>
-              <Badge variant='outline' className='bg-green-50 text-green-700 border-green-200'>
+              <Badge className='bg-green-50 text-green-700 border-green-200'>
                 Municipal Employee
               </Badge>
-              <Button variant='outline' onClick={handleLogout}>
+              <Button onClick={handleLogout} className='border border-gray-300 hover:bg-gray-100'>
                 Logout
               </Button>
             </div>
@@ -293,151 +230,136 @@ export default function EmployeeDashboard() {
           </Card>
         </div>
 
-        <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
-          {/* Today's Assignments */}
-          <Card className='lg:col-span-2'>
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
+          {/* QR Scanner Section */}
+          <Card>
             <CardHeader>
-              <CardTitle>Today&apos;s Assignments</CardTitle>
-              <CardDescription>Your scheduled waste collection tasks</CardDescription>
+              <CardTitle>QR Code Scanner</CardTitle>
+              <CardDescription>Scan QR code to record garbage disposal</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {showScanner ? (
+                <div className='relative'>
+                  <QrScanner
+                    delay={300}
+                    onError={handleError}
+                    onScan={handleScan}
+                    style={{ width: '100%' }}
+                  />
+                  <Button
+                    onClick={() => setShowScanner(false)}
+                    className='absolute top-2 right-2 bg-red-500 hover:bg-red-600'
+                  >
+                    Close Scanner
+                  </Button>
+                </div>
+              ) : (
+                <div className='text-center'>
+                  {showSuccess ? (
+                    <div className='p-4 bg-green-50 text-green-700 rounded-lg'>
+                      <CheckCircle className='h-12 w-12 mx-auto mb-2' />
+                      <p className='font-medium'>Garbage disposed successfully!</p>
+                    </div>
+                  ) : (
+                    <Button
+                      onClick={() => setShowScanner(true)}
+                      className='bg-green-500 hover:bg-green-600'
+                    >
+                      <Scan className='mr-2 h-4 w-4' />
+                      Start Scanning
+                    </Button>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Pickup Requests */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Pickup Requests</CardTitle>
+              <CardDescription>Citizen requests waiting for your response</CardDescription>
             </CardHeader>
             <CardContent>
               <div className='space-y-4'>
-                {todayAssignments.map((assignment) => (
+                {pickupRequests.map((request) => (
                   <div
-                    key={assignment.id}
-                    className='flex items-center justify-between p-4 border rounded-lg'
+                    key={request.id}
+                    className='p-4 border rounded-lg space-y-2'
                   >
-                    <div className='flex items-center space-x-4'>
-                      <div className='p-2 rounded-lg bg-gray-100'>
-                        <MapPin className='h-4 w-4 text-gray-600' />
-                      </div>
+                    <div className='flex justify-between items-start'>
                       <div>
-                        <h3 className='font-medium'>{assignment.area}</h3>
-                        <p className='text-sm text-gray-600'>{assignment.wasteType}</p>
+                        <h3 className='font-medium'>{request.citizenName}</h3>
+                        <p className='text-sm text-gray-600'>{request.address}</p>
                         <div className='flex items-center space-x-2 mt-1'>
                           <Clock className='h-3 w-3 text-gray-400' />
-                          <span className='text-xs text-gray-500'>{assignment.estimatedTime}</span>
+                          <span className='text-xs text-gray-500'>{request.requestTime}</span>
                         </div>
                       </div>
+                      <Badge className='bg-blue-50 text-blue-700'>{request.wasteType}</Badge>
                     </div>
-                    <div className='flex flex-col items-end space-y-2'>
-                      <Badge className={getStatusColor(assignment.status)}>
-                        {assignment.status.replace('-', ' ')}
-                      </Badge>
-                      <Badge variant='outline' className={getPriorityColor(assignment.priority)}>
-                        {assignment.priority}
-                      </Badge>
+                    <div className='flex space-x-2 justify-end'>
+                      <Button
+                        onClick={() => handlePickupRequest(request.id, 'rejected')}
+                        className='bg-red-500 hover:bg-red-600 h-8 text-sm'
+                      >
+                        <X className='h-4 w-4 mr-1' />
+                        Reject
+                      </Button>
+                      <Button
+                        onClick={() => handlePickupRequest(request.id, 'accepted')}
+                        className='bg-green-500 hover:bg-green-600 h-8 text-sm'
+                      >
+                        <Check className='h-4 w-4 mr-1' />
+                        Accept
+                      </Button>
                     </div>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Frequently used tools</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className='space-y-3'>
-                {quickActions.map((action) => (
-                  <Link key={action.title} href={action.link}>
-                    <div className='flex items-center p-3 border rounded-lg hover:shadow-md transition-shadow cursor-pointer'>
-                      <div className={`p-2 rounded-lg ${action.color} text-white mr-3`}>
-                        {action.icon}
-                      </div>
-                      <div>
-                        <h3 className='font-medium text-sm'>{action.title}</h3>
-                        <p className='text-xs text-gray-600'>{action.description}</p>
-                      </div>
-                    </div>
-                  </Link>
                 ))}
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Recent Activity & Performance */}
-        <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8'>
-          {/* Recent Activity */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
-              <CardDescription>Your latest work updates</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className='space-y-4'>
-                {recentActivities.map((activity, index) => (
-                  <div key={index} className='flex items-start space-x-3'>
-                    <div className='w-2 h-2 rounded-full bg-green-500 mt-2'></div>
-                    <div className='flex-1'>
-                      <p className='text-sm font-medium'>{activity.description}</p>
-                      <div className='flex items-center justify-between mt-1'>
-                        <span className='text-xs text-gray-500'>{activity.time}</span>
-                        <div className='text-xs'>
-                          {activity.amount && <Badge variant='secondary'>{activity.amount}</Badge>}
-                          {activity.efficiency && (
-                            <Badge variant='outline' className='bg-green-50 text-green-700'>
-                              {activity.efficiency}
-                            </Badge>
-                          )}
-                          {activity.status && (
-                            <Badge variant='outline' className='bg-blue-50 text-blue-700'>
-                              {activity.status}
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+        {/* Performance Metrics */}
+        <Card className='mt-8'>
+          <CardHeader>
+            <CardTitle>Performance Metrics</CardTitle>
+            <CardDescription>Your work progress this month</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className='space-y-4'>
+              <div>
+                <div className='flex justify-between mb-2'>
+                  <span className='text-sm font-medium'>Collection Target</span>
+                  <span className='text-sm text-gray-600'>145.8kg / 160kg</span>
+                </div>
+                <Progress value={91} className='h-2' />
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Performance Metrics */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Performance Metrics</CardTitle>
-              <CardDescription>Your work progress this month</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className='space-y-4'>
-                <div>
-                  <div className='flex justify-between mb-2'>
-                    <span className='text-sm font-medium'>Collection Target</span>
-                    <span className='text-sm text-gray-600'>145.8kg / 160kg</span>
-                  </div>
-                  <Progress value={91} className='h-2' />
+              <div>
+                <div className='flex justify-between mb-2'>
+                  <span className='text-sm font-medium'>Route Efficiency</span>
+                  <span className='text-sm text-gray-600'>87%</span>
                 </div>
-                <div>
-                  <div className='flex justify-between mb-2'>
-                    <span className='text-sm font-medium'>Route Efficiency</span>
-                    <span className='text-sm text-gray-600'>87%</span>
-                  </div>
-                  <Progress value={87} className='h-2' />
-                </div>
-                <div>
-                  <div className='flex justify-between mb-2'>
-                    <span className='text-sm font-medium'>On-Time Completion</span>
-                    <span className='text-sm text-gray-600'>23 / 25 tasks</span>
-                  </div>
-                  <Progress value={92} className='h-2' />
-                </div>
-                <div>
-                  <div className='flex justify-between mb-2'>
-                    <span className='text-sm font-medium'>Citizen Satisfaction</span>
-                    <span className='text-sm text-gray-600'>4.6 / 5.0</span>
-                  </div>
-                  <Progress value={92} className='h-2' />
-                </div>
+                <Progress value={87} className='h-2' />
               </div>
-            </CardContent>
-          </Card>
-        </div>
+              <div>
+                <div className='flex justify-between mb-2'>
+                  <span className='text-sm font-medium'>On-Time Completion</span>
+                  <span className='text-sm text-gray-600'>23 / 25 tasks</span>
+                </div>
+                <Progress value={92} className='h-2' />
+              </div>
+              <div>
+                <div className='flex justify-between mb-2'>
+                  <span className='text-sm font-medium'>Citizen Satisfaction</span>
+                  <span className='text-sm text-gray-600'>4.6 / 5.0</span>
+                </div>
+                <Progress value={92} className='h-2' />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
