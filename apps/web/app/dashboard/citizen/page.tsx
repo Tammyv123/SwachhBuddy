@@ -14,7 +14,8 @@ interface User {
   firstName: string
   lastName: string
   email: string
-  userType: string
+  role?: string // From backend auth service
+  userType?: string // For backward compatibility
 }
 
 export default function CitizenDashboard() {
@@ -34,6 +35,12 @@ export default function CitizenDashboard() {
 
     try {
       const parsedUser = JSON.parse(userData)
+      // Check for both 'role' (from backend) and 'userType' (for backward compatibility)
+      // Redirect employees to the employee dashboard
+      if (parsedUser.role === 'employee' || parsedUser.userType === 'employee') {
+        router.push('/dashboard/employee')
+        return
+      }
       setUser(parsedUser)
     } catch (error) {
       console.error('Error parsing user data:', error)

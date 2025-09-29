@@ -19,14 +19,15 @@ import {
   Check,
 } from 'lucide-react'
 import Link from 'next/link'
-import QrScanner from 'react-qr-scanner'
+import QRScanner from '@/components/QRScanner'
 
 interface User {
   id: string
   firstName: string
   lastName: string
   email: string
-  userType: string
+  role?: string // From backend auth service
+  userType?: string // For backward compatibility
 }
 
 interface PickupRequest {
@@ -60,6 +61,17 @@ export default function EmployeeDashboard() {
     console.error(err)
   }
 
+  const handlePointsEarned = (points: number) => {
+    // Handle points earned from scanning
+    console.log(`Points earned: ${points}`)
+    setShowSuccess(true)
+    setTimeout(() => setShowSuccess(false), 3000)
+  }
+
+  const handleCloseScanner = () => {
+    setShowScanner(false)
+  }
+
   const handlePickupRequest = async (requestId: string, status: 'accepted' | 'rejected') => {
     // Here you would make an API call to update the request status
     console.log(`Request ${requestId} ${status}`)
@@ -71,20 +83,23 @@ export default function EmployeeDashboard() {
     const userData = localStorage.getItem('user')
     const token = localStorage.getItem('accessToken')
 
-    if (!userData || !token) {
+    if (!userData || !token || userData === 'undefined' || userData === 'null') {
       router.push('/login')
       return
     }
 
     try {
       const parsedUser = JSON.parse(userData)
-      if (parsedUser.userType !== 'employee') {
+      // Check for both 'role' (from backend) and 'userType' (for backward compatibility)
+      if (parsedUser.role !== 'employee' && parsedUser.userType !== 'employee') {
         router.push('/dashboard/citizen')
         return
       }
       setUser(parsedUser)
     } catch (error) {
       console.error('Error parsing user data:', error)
+      localStorage.removeItem('user')
+      localStorage.removeItem('accessToken')
       router.push('/login')
       return
     }
@@ -129,7 +144,7 @@ export default function EmployeeDashboard() {
       status: 'pending',
       requestTime: '30 mins ago',
       wasteType: 'Mixed Waste',
-      citizenName: 'Rajesh Kumar'
+      citizenName: 'Rajesh Kumar',
     },
     {
       id: '2',
@@ -137,7 +152,7 @@ export default function EmployeeDashboard() {
       status: 'pending',
       requestTime: '1 hour ago',
       wasteType: 'Organic Waste',
-      citizenName: 'Priya Singh'
+      citizenName: 'Priya Singh',
     },
     {
       id: '3',
@@ -145,8 +160,8 @@ export default function EmployeeDashboard() {
       status: 'pending',
       requestTime: '2 hours ago',
       wasteType: 'Recyclable',
-      citizenName: 'Amit Sharma'
-    }
+      citizenName: 'Amit Sharma',
+    },
   ]
 
   return (
@@ -239,20 +254,11 @@ export default function EmployeeDashboard() {
             </CardHeader>
             <CardContent>
               {showScanner ? (
-                <div className='relative'>
-                  <QrScanner
-                    delay={300}
-                    onError={handleError}
-                    onScan={handleScan}
-                    style={{ width: '100%' }}
-                  />
-                  <Button
-                    onClick={() => setShowScanner(false)}
-                    className='absolute top-2 right-2 bg-red-500 hover:bg-red-600'
-                  >
-                    Close Scanner
-                  </Button>
-                </div>
+                <QRScanner
+                  isOpen={showScanner}
+                  onClose={handleCloseScanner}
+                  onPointsEarned={handlePointsEarned}
+                />
               ) : (
                 <div className='text-center'>
                   {showSuccess ? (
@@ -283,10 +289,7 @@ export default function EmployeeDashboard() {
             <CardContent>
               <div className='space-y-4'>
                 {pickupRequests.map((request) => (
-                  <div
-                    key={request.id}
-                    className='p-4 border rounded-lg space-y-2'
-                  >
+                  <div key={request.id} className='p-4 border rounded-lg space-y-2'>
                     <div className='flex justify-between items-start'>
                       <div>
                         <h3 className='font-medium'>{request.citizenName}</h3>

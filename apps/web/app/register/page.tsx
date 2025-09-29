@@ -14,6 +14,13 @@ import {
 } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import Link from 'next/link'
 
 export default function RegisterPage() {
@@ -24,6 +31,10 @@ export default function RegisterPage() {
     password: '',
     confirmPassword: '',
     phoneNumber: '',
+    // Employee-specific fields
+    employeeType: '',
+    employeeId: '',
+    department: '',
   })
   const [userType, setUserType] = useState<'citizen' | 'employee'>('citizen')
   const [loading, setLoading] = useState(false)
@@ -37,6 +48,26 @@ export default function RegisterPage() {
     })
   }
 
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData({
+      ...formData,
+      [name]: value,
+    })
+  }
+
+  const handleUserTypeChange = (newUserType: 'citizen' | 'employee') => {
+    setUserType(newUserType)
+    // Clear employee-specific fields when switching to citizen
+    if (newUserType === 'citizen') {
+      setFormData({
+        ...formData,
+        employeeType: '',
+        employeeId: '',
+        department: '',
+      })
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -48,15 +79,31 @@ export default function RegisterPage() {
       return
     }
 
+    // Validate employee-specific fields
+    if (userType === 'employee') {
+      if (!formData.employeeType || !formData.employeeId || !formData.department) {
+        setError('Please fill in all employee fields: Employee Type, Employee ID, and Department')
+        setLoading(false)
+        return
+      }
+    }
+
     try {
       const { confirmPassword, ...submitData } = formData
+
+      // Only include employee fields if user is registering as employee
+      let finalSubmitData: any = submitData
+      if (userType === 'citizen') {
+        const { employeeType, employeeId, department, ...citizenData } = submitData
+        finalSubmitData = citizenData
+      }
 
       const response = await fetch(`/api/auth/${userType}s/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(submitData),
+        body: JSON.stringify(finalSubmitData),
         credentials: 'include',
       })
 
@@ -98,7 +145,7 @@ export default function RegisterPage() {
                 <Button
                   type='button'
                   variant={userType === 'citizen' ? 'default' : 'outline'}
-                  onClick={() => setUserType('citizen')}
+                  onClick={() => handleUserTypeChange('citizen')}
                   className='flex-1'
                 >
                   Citizen
@@ -106,7 +153,7 @@ export default function RegisterPage() {
                 <Button
                   type='button'
                   variant={userType === 'employee' ? 'default' : 'outline'}
-                  onClick={() => setUserType('employee')}
+                  onClick={() => handleUserTypeChange('employee')}
                   className='flex-1'
                 >
                   Employee
@@ -163,6 +210,53 @@ export default function RegisterPage() {
                 onChange={handleChange}
               />
             </div>
+
+            {/* Employee-specific fields */}
+            {userType === 'employee' && (
+              <>
+                <div className='space-y-2'>
+                  <Label htmlFor='employeeType'>Employee Type</Label>
+                  <Select
+                    value={formData.employeeType}
+                    onValueChange={(value) => handleSelectChange('employeeType', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder='Select employee type' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='waste_collector'>Waste Collector</SelectItem>
+                      <SelectItem value='supervisor'>Supervisor</SelectItem>
+                      <SelectItem value='admin'>Admin</SelectItem>
+                      <SelectItem value='driver'>Driver</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className='space-y-2'>
+                  <Label htmlFor='employeeId'>Employee ID</Label>
+                  <Input
+                    id='employeeId'
+                    name='employeeId'
+                    placeholder='Enter your employee ID'
+                    value={formData.employeeId}
+                    onChange={handleChange}
+                    required={userType === 'employee'}
+                  />
+                </div>
+
+                <div className='space-y-2'>
+                  <Label htmlFor='department'>Department</Label>
+                  <Input
+                    id='department'
+                    name='department'
+                    placeholder='Enter your department'
+                    value={formData.department}
+                    onChange={handleChange}
+                    required={userType === 'employee'}
+                  />
+                </div>
+              </>
+            )}
 
             <div className='space-y-2'>
               <Label htmlFor='password'>Password</Label>
