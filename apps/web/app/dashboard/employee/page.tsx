@@ -19,7 +19,7 @@ import {
   Check,
 } from 'lucide-react'
 import Link from 'next/link'
-import QRScanner from '@/components/QRScanner'
+import QrScanner from 'react-qr-scanner'
 
 interface User {
   id: string
@@ -42,23 +42,32 @@ interface PickupRequest {
 export default function EmployeeDashboard() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-  const [showScanner, setShowScanner] = useState(false)
-  const [scanResult, setResult] = useState('')
+  const [itemCount, setItemCount] = useState('')
+  const [citizenId, setCitizenId] = useState('')
+  const [qrData, setQrData] = useState<string | null>(null)
   const [showSuccess, setShowSuccess] = useState(false)
   const router = useRouter()
 
-  const handleScan = (data: any) => {
-    if (data) {
-      setResult(data)
-      setShowScanner(false)
-      setShowSuccess(true)
-      // Here you would typically make an API call to record the garbage disposal
-      setTimeout(() => setShowSuccess(false), 3000)
-    }
+  const handleGenerateQR = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Create QR data with timestamp to make each QR code unique
+    const data = JSON.stringify({
+      citizenId,
+      itemCount: parseInt(itemCount),
+      timestamp: new Date().toISOString(),
+    })
+    
+    // Create a base64 encoded string of the data
+    const encodedData = Buffer.from(data).toString('base64')
+    setQrData(encodedData)
+    setShowSuccess(true)
   }
 
-  const handleError = (err: any) => {
-    console.error(err)
+  const handleReset = () => {
+    setItemCount('')
+    setCitizenId('')
+    setQrData(null)
+    setShowSuccess(false)
   }
 
   const handlePointsEarned = (points: number) => {
@@ -246,36 +255,64 @@ export default function EmployeeDashboard() {
         </div>
 
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-          {/* QR Scanner Section */}
+          {/* QR Generator Section */}
           <Card>
             <CardHeader>
-              <CardTitle>QR Code Scanner</CardTitle>
-              <CardDescription>Scan QR code to record garbage disposal</CardDescription>
+              <CardTitle>Generate Disposal QR Code</CardTitle>
+              <CardDescription>Create QR code for recording recycled items</CardDescription>
             </CardHeader>
             <CardContent>
               {showScanner ? (
-                <QRScanner
-                  isOpen={showScanner}
-                  onClose={handleCloseScanner}
-                  onPointsEarned={handlePointsEarned}
-                />
-              ) : (
-                <div className='text-center'>
-                  {showSuccess ? (
-                    <div className='p-4 bg-green-50 text-green-700 rounded-lg'>
-                      <CheckCircle className='h-12 w-12 mx-auto mb-2' />
-                      <p className='font-medium'>Garbage disposed successfully!</p>
-                    </div>
-                  ) : (
-                    <Button
-                      onClick={() => setShowScanner(true)}
-                      className='bg-green-500 hover:bg-green-600'
-                    >
-                      <Scan className='mr-2 h-4 w-4' />
-                      Start Scanning
-                    </Button>
-                  )}
+                <div className='relative'>
+                  <QrScanner
+                    delay={300}
+                    onError={handleError}
+                    onScan={handleScan}
+                    style={{ width: '100%' }}
+                  />
+                  <Button
+                    onClick={() => setShowScanner(false)}
+                    className='absolute top-2 right-2 bg-red-500 hover:bg-red-600'
+                  >
+                    Close Scanner
+                  </Button>
                 </div>
+              ) : (
+                <form onSubmit={handleGenerateQR} className='space-y-4'>
+                  <div>
+                    <label htmlFor="itemCount" className='block text-sm font-medium text-gray-700 mb-1'>
+                      Number of Items Recycled
+                    </label>
+                    <input
+                      type="number"
+                      id="itemCount"
+                      value={itemCount}
+                      onChange={(e) => setItemCount(e.target.value)}
+                      className='w-full p-2 border rounded-md'
+                      required
+                      min="1"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="citizenId" className='block text-sm font-medium text-gray-700 mb-1'>
+                      Citizen ID
+                    </label>
+                    <input
+                      type="text"
+                      id="citizenId"
+                      value={citizenId}
+                      onChange={(e) => setCitizenId(e.target.value)}
+                      className='w-full p-2 border rounded-md'
+                      required
+                    />
+                  </div>
+                  <Button
+                    type="submit"
+                    className='w-full bg-green-500 hover:bg-green-600'
+                  >
+                    Generate QR Code
+                  </Button>
+                </form>
               )}
             </CardContent>
           </Card>
