@@ -45,6 +45,16 @@ export default function EmployeeDashboard() {
   const [citizenId, setCitizenId] = useState('')
   const [qrData, setQrData] = useState<string | null>(null)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [requests, setRequests] = useState<PickupRequest[]>([])
+  const [notification, setNotification] = useState<{
+    show: boolean
+    message: string
+    type: 'success' | 'error'
+  }>({
+    show: false,
+    message: '',
+    type: 'success'
+  })
   const router = useRouter()
 
   const handleGenerateQR = (e: React.FormEvent) => {
@@ -71,10 +81,35 @@ export default function EmployeeDashboard() {
 
 
 
+  const showNotification = (message: string, type: 'success' | 'error') => {
+    setNotification({
+      show: true,
+      message,
+      type
+    })
+    // Auto-hide notification after 3 seconds
+    setTimeout(() => {
+      setNotification(prev => ({ ...prev, show: false }))
+    }, 3000)
+  }
+
   const handlePickupRequest = async (requestId: string, status: 'accepted' | 'rejected') => {
-    // Here you would make an API call to update the request status
-    console.log(`Request ${requestId} ${status}`)
-    // Update the UI accordingly
+    try {
+      // Here you would make an API call to update the request status
+      console.log(`Request ${requestId} ${status}`)
+      
+      // Remove the request from the list
+      setRequests(prevRequests => prevRequests.filter(req => req.id !== requestId))
+      
+      // Show appropriate notification
+      if (status === 'accepted') {
+        showNotification('Request has been accepted successfully!', 'success')
+      } else {
+        showNotification('Request has been rejected', 'error')
+      }
+    } catch (error) {
+      showNotification('Failed to update request status', 'error')
+    }
   }
 
   useEffect(() => {
@@ -103,6 +138,33 @@ export default function EmployeeDashboard() {
       return
     }
 
+    // Initialize requests with mock data
+    setRequests([
+      {
+        id: '1',
+        address: 'Block A, Sector 15, Dwarka',
+        status: 'pending',
+        requestTime: '30 mins ago',
+        wasteType: 'Mixed Waste',
+        citizenName: 'Rajesh Kumar'
+      },
+      {
+        id: '2',
+        address: 'C-45, Connaught Place',
+        status: 'pending',
+        requestTime: '1 hour ago',
+        wasteType: 'Organic Waste',
+        citizenName: 'Priya Singh'
+      },
+      {
+        id: '3',
+        address: 'Shop 12, Lajpat Nagar Market',
+        status: 'pending',
+        requestTime: '2 hours ago',
+        wasteType: 'Recyclable',
+        citizenName: 'Amit Sharma'
+      }
+    ])
     setLoading(false)
   }, [router])
 
@@ -319,38 +381,64 @@ export default function EmployeeDashboard() {
               <CardDescription>Citizen requests waiting for your response</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className='space-y-4'>
-                {pickupRequests.map((request) => (
-                  <div key={request.id} className='p-4 border rounded-lg space-y-2'>
-                    <div className='flex justify-between items-start'>
-                      <div>
-                        <h3 className='font-medium'>{request.citizenName}</h3>
-                        <p className='text-sm text-gray-600'>{request.address}</p>
-                        <div className='flex items-center space-x-2 mt-1'>
-                          <Clock className='h-3 w-3 text-gray-400' />
-                          <span className='text-xs text-gray-500'>{request.requestTime}</span>
-                        </div>
-                      </div>
-                      <Badge className='bg-blue-50 text-blue-700'>{request.wasteType}</Badge>
-                    </div>
-                    <div className='flex space-x-2 justify-end'>
-                      <Button
-                        onClick={() => handlePickupRequest(request.id, 'rejected')}
-                        className='bg-red-500 hover:bg-red-600 h-8 text-sm'
-                      >
-                        <X className='h-4 w-4 mr-1' />
-                        Reject
-                      </Button>
-                      <Button
-                        onClick={() => handlePickupRequest(request.id, 'accepted')}
-                        className='bg-green-500 hover:bg-green-600 h-8 text-sm'
-                      >
-                        <Check className='h-4 w-4 mr-1' />
-                        Accept
-                      </Button>
-                    </div>
+              {/* Notification Popup */}
+              {notification.show && (
+                <div
+                  className={`mb-4 p-4 rounded-lg ${
+                    notification.type === 'success'
+                      ? 'bg-green-50 text-green-700'
+                      : 'bg-red-50 text-red-700'
+                  } flex items-center justify-between`}
+                >
+                  <div className="flex items-center">
+                    {notification.type === 'success' ? (
+                      <CheckCircle className="h-5 w-5 mr-2" />
+                    ) : (
+                      <X className="h-5 w-5 mr-2" />
+                    )}
+                    <p className="font-medium">{notification.message}</p>
                   </div>
-                ))}
+                </div>
+              )}
+
+              <div className='space-y-4'>
+                {requests.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>No pending pickup requests</p>
+                  </div>
+                ) : (
+                  requests.map((request) => (
+                    <div key={request.id} className='p-4 border rounded-lg space-y-2'>
+                      <div className='flex justify-between items-start'>
+                        <div>
+                          <h3 className='font-medium'>{request.citizenName}</h3>
+                          <p className='text-sm text-gray-600'>{request.address}</p>
+                          <div className='flex items-center space-x-2 mt-1'>
+                            <Clock className='h-3 w-3 text-gray-400' />
+                            <span className='text-xs text-gray-500'>{request.requestTime}</span>
+                          </div>
+                        </div>
+                        <Badge className='bg-blue-50 text-blue-700'>{request.wasteType}</Badge>
+                      </div>
+                      <div className='flex space-x-2 justify-end'>
+                        <Button
+                          onClick={() => handlePickupRequest(request.id, 'rejected')}
+                          className='bg-red-500 hover:bg-red-600 h-8 text-sm'
+                        >
+                          <X className='h-4 w-4 mr-1' />
+                          Reject
+                        </Button>
+                        <Button
+                          onClick={() => handlePickupRequest(request.id, 'accepted')}
+                          className='bg-green-500 hover:bg-green-600 h-8 text-sm'
+                        >
+                          <Check className='h-4 w-4 mr-1' />
+                          Accept
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
