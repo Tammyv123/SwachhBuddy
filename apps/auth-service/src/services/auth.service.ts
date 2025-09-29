@@ -1,4 +1,3 @@
-import 'dotenv/config'
 import jwt, { SignOptions } from 'jsonwebtoken'
 import { Request, Response } from 'express'
 import User, { IUser } from '../models/User'

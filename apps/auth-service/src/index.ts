@@ -1,16 +1,18 @@
-import express from 'express'
 import dotenv from 'dotenv'
 import path from 'path'
+
+// Load environment variables with explicit path
+dotenv.config({
+    path: path.resolve(__dirname, '..', '.env'),
+    quiet: true,
+})
+
+import express from 'express'
+
 import { logger } from '@swachhbuddy/utils'
 import { setupDefaultMiddlewares, requestLogger } from '@swachhbuddy/middlewares'
 import databaseService from './services/database.service'
 import authRoutes from './routes/index'
-
-// Load environment variables with explicit path
-dotenv.config({
-    path: path.resolve(process.cwd(), '.env'),
-    quiet: true,
-})
 
 const app = express()
 const PORT = Number(process.env.PORT) || 6001

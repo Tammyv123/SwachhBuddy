@@ -26,6 +26,8 @@ class DatabaseService {
             throw new Error('MONGODB_URI environment variable is not set')
         }
 
+        logger.info(`Connecting to MongoDB with URI: ${mongoUri}`)
+
         try {
             // Configure mongoose options
             const options = {
