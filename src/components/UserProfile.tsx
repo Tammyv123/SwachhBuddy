@@ -69,7 +69,7 @@ const UserProfile = ({ userData, onBack }: UserProfileProps) => {
       <div className="container mx-auto max-w-4xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold">User Profile</h1>
+          <h1 className="text-3xl font-bold text-foreground">User Profile</h1>
           {onBack && (
             <Button variant="outline" onClick={onBack} className="flex items-center gap-2">
               <Home className="h-4 w-4" />
@@ -79,29 +79,29 @@ const UserProfile = ({ userData, onBack }: UserProfileProps) => {
         </div>
 
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList>
+          <TabsList className="bg-muted">
             <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="stats">Statistics</TabsTrigger>
             <TabsTrigger value="achievements">Achievements</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile" className="space-y-6">
-            <Card>
-              <CardHeader>
+            <Card className="border-2">
+              <CardHeader className="bg-muted/30">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <Avatar className="h-20 w-20">
-                      <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
+                    <Avatar className="h-20 w-20 border-4 border-primary">
+                      <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-bold">
                         {profileData.name.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <CardTitle className="text-2xl">{profileData.name}</CardTitle>
-                      <CardDescription className="flex items-center gap-2">
-                        <Badge variant={userData?.userType === 'employee' ? 'default' : 'secondary'}>
+                      <CardTitle className="text-2xl text-foreground">{profileData.name}</CardTitle>
+                      <CardDescription className="flex items-center gap-2 mt-2">
+                        <Badge variant={userData?.userType === 'employee' ? 'default' : 'secondary'} className="text-sm">
                           {userData?.userType === 'employee' ? 'Municipal Employee' : 'Eco Citizen'}
                         </Badge>
-                        <span>Member since {new Date(profileData.joinDate).toLocaleDateString()}</span>
+                        <span className="text-sm text-foreground/70">Member since {new Date(profileData.joinDate).toLocaleDateString()}</span>
                       </CardDescription>
                     </div>
                   </div>
@@ -123,10 +123,10 @@ const UserProfile = ({ userData, onBack }: UserProfileProps) => {
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-6 pt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
+                    <Label htmlFor="name" className="text-sm font-semibold text-foreground">Full Name</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -134,13 +134,13 @@ const UserProfile = ({ userData, onBack }: UserProfileProps) => {
                         value={profileData.name}
                         onChange={(e) => setProfileData(prev => ({ ...prev, name: e.target.value }))}
                         disabled={!isEditing}
-                        className="pl-10"
+                        className="pl-10 bg-background text-foreground"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email" className="text-sm font-semibold text-foreground">Email</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -148,13 +148,13 @@ const UserProfile = ({ userData, onBack }: UserProfileProps) => {
                         value={profileData.email}
                         onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
                         disabled={!isEditing}
-                        className="pl-10"
+                        className="pl-10 bg-background text-foreground"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
+                    <Label htmlFor="phone" className="text-sm font-semibold text-foreground">Phone Number</Label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -162,24 +162,25 @@ const UserProfile = ({ userData, onBack }: UserProfileProps) => {
                         value={profileData.phone}
                         onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
                         disabled={!isEditing}
-                        className="pl-10"
+                        className="pl-10 bg-background text-foreground"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="occupation">Occupation</Label>
+                    <Label htmlFor="occupation" className="text-sm font-semibold text-foreground">Occupation</Label>
                     <Input
                       id="occupation"
                       value={profileData.occupation}
                       onChange={(e) => setProfileData(prev => ({ ...prev, occupation: e.target.value }))}
                       disabled={!isEditing}
+                      className="bg-background text-foreground"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="address">Address</Label>
+                  <Label htmlFor="address" className="text-sm font-semibold text-foreground">Address</Label>
                   <div className="relative">
                     <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Textarea
@@ -187,19 +188,20 @@ const UserProfile = ({ userData, onBack }: UserProfileProps) => {
                       value={profileData.address}
                       onChange={(e) => setProfileData(prev => ({ ...prev, address: e.target.value }))}
                       disabled={!isEditing}
-                      className="pl-10"
+                      className="pl-10 bg-background text-foreground"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="bio">Bio</Label>
+                  <Label htmlFor="bio" className="text-sm font-semibold text-foreground">Bio</Label>
                   <Textarea
                     id="bio"
                     value={profileData.bio}
                     onChange={(e) => setProfileData(prev => ({ ...prev, bio: e.target.value }))}
                     disabled={!isEditing}
                     rows={3}
+                    className="bg-background text-foreground"
                   />
                 </div>
               </CardContent>
@@ -209,40 +211,40 @@ const UserProfile = ({ userData, onBack }: UserProfileProps) => {
           <TabsContent value="stats" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {stats.map((stat, index) => (
-                <Card key={index}>
+                <Card key={index} className="border-2 hover:shadow-lg transition-shadow">
                   <CardContent className="p-6 text-center">
                     <div className={`mx-auto mb-3 p-3 rounded-full w-14 h-14 flex items-center justify-center bg-muted ${stat.color}`}>
                       {stat.icon}
                     </div>
-                    <div className="text-2xl font-bold mb-1">{stat.value}</div>
-                    <div className="text-sm text-muted-foreground">{stat.label}</div>
+                    <div className="text-2xl font-bold mb-1 text-foreground">{stat.value}</div>
+                    <div className="text-sm font-medium text-muted-foreground">{stat.label}</div>
                   </CardContent>
                 </Card>
               ))}
             </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Activity Overview</CardTitle>
-                <CardDescription>Your waste management contribution over time</CardDescription>
+            <Card className="border-2">
+              <CardHeader className="bg-muted/30">
+                <CardTitle className="text-foreground">Activity Overview</CardTitle>
+                <CardDescription className="text-foreground/70">Your waste management contribution over time</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-6">
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span>QR Codes Scanned</span>
-                    <Badge variant="secondary">25 this month</Badge>
+                  <div className="flex justify-between items-center p-3 rounded-lg bg-muted/30">
+                    <span className="font-medium text-foreground">QR Codes Scanned</span>
+                    <Badge variant="secondary" className="font-semibold">25 this month</Badge>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span>Training Modules Completed</span>
-                    <Badge variant="secondary">8 total</Badge>
+                  <div className="flex justify-between items-center p-3 rounded-lg bg-muted/30">
+                    <span className="font-medium text-foreground">Training Modules Completed</span>
+                    <Badge variant="secondary" className="font-semibold">8 total</Badge>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span>Community Events Joined</span>
-                    <Badge variant="secondary">3 this quarter</Badge>
+                  <div className="flex justify-between items-center p-3 rounded-lg bg-muted/30">
+                    <span className="font-medium text-foreground">Community Events Joined</span>
+                    <Badge variant="secondary" className="font-semibold">3 this quarter</Badge>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span>Reports Submitted</span>
-                    <Badge variant="secondary">12 total</Badge>
+                  <div className="flex justify-between items-center p-3 rounded-lg bg-muted/30">
+                    <span className="font-medium text-foreground">Reports Submitted</span>
+                    <Badge variant="secondary" className="font-semibold">12 total</Badge>
                   </div>
                 </div>
               </CardContent>

@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, Recycle, AlertCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import Navbar from "@/components/Navbar";
+// Removed: import Navbar from "@/components/Navbar";
 import { signInWithEmail, signInWithGoogle } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 
@@ -86,7 +86,7 @@ const Login = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
-            <Navbar />
+            {/* Removed duplicate Navbar */}
 
             <div className="container mx-auto px-4 py-16">
                 <div className="max-w-md mx-auto">
