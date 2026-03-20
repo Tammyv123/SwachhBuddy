@@ -78,7 +78,7 @@ export const WasteAdvancedModule = () => {
         ],
         quiz: {
           question: "Which method produces biogas?",
-          options: ["Vermicomposting", "Anaerobic Digestionn", "Open dumping", "Incineration"],
+          options: ["Vermicomposting", "Anaerobic Digestion", "Open dumping", "Incineration"],
           correct: 1
         }
       }
@@ -167,7 +167,7 @@ export const WasteAdvancedModule = () => {
     setQuizAnswers({...quizAnswers, [lessonId]: answerIndex});
     const lesson = lessons[lessonId];
     if (answerIndex === lesson.content.quiz.correct) {
-      toast.success("Correct!");
+      toast.success("Correct! 🎉");
       handleCompleteLesson(lessonId);
     } else {
       toast.error("Incorrect, try again!");
@@ -182,7 +182,7 @@ export const WasteAdvancedModule = () => {
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-3xl font-bold text-primary">Advanced Waste Management</h1>
-            <p className="text-muted-foreground">1.5 hours • 8,900 enrolled • Certificate on completion</p>
+            <p className="text-muted-foreground">1.5 hours • 6 lessons • Certificate on completion</p>
           </div>
           <Button variant="outline" size="sm" onClick={() => navigate('/')} className="flex items-center gap-2">
             <Home className="h-4 w-4"/> Home
@@ -225,7 +225,7 @@ export const WasteAdvancedModule = () => {
               onClick={() => introWatched ? setCurrentLesson(index) : toast.error("Watch the intro video first!")}>
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-center">
-                  <Badge variant={lesson.type === 'video' ? 'default' : lesson.type === 'interactive' ? 'secondary' : 'secondary'}>
+                  <Badge variant={lesson.type === 'video' ? 'default' : 'secondary'}>
                     {lesson.type === 'video' ? <Video className="h-3 w-3 mr-1"/> : lesson.type === 'interactive' ? <Play className="h-3 w-3 mr-1"/> : <FileText className="h-3 w-3 mr-1"/>}
                     {lesson.type}
                   </Badge>
@@ -241,7 +241,10 @@ export const WasteAdvancedModule = () => {
         {introWatched && (
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><BookOpen className="h-5 w-5"/>{lessons[currentLesson].title}</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <BookOpen className="h-5 w-5"/>
+                {lessons[currentLesson].title}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <Tabs defaultValue="content" className="w-full">
@@ -274,15 +277,26 @@ export const WasteAdvancedModule = () => {
                   {lessons[currentLesson].content.videoUrl && (
                     <video src={lessons[currentLesson].content.videoUrl} controls className="w-full rounded-lg mt-4" />
                   )}
+                  <Button
+                    onClick={() => handleCompleteLesson(currentLesson)}
+                    disabled={completedLessons.includes(currentLesson)}
+                    className="w-full"
+                  >
+                    {completedLessons.includes(currentLesson)
+                      ? <><CheckCircle className="h-4 w-4 mr-2"/>Completed</>
+                      : <><Award className="h-4 w-4 mr-2"/>Mark Complete</>}
+                  </Button>
                 </TabsContent>
 
                 <TabsContent value="quiz" className="space-y-4">
                   <div className="space-y-2">
                     <p className="font-medium">{lessons[currentLesson].content.quiz.question}</p>
                     {lessons[currentLesson].content.quiz.options.map((option, index) => (
-                      <Button key={index} 
-                        variant={quizAnswers[currentLesson] === index ? (index === lessons[currentLesson].content.quiz.correct ? "default":"destructive") : "outline"}
-                        className="w-full text-left"
+                      <Button key={index}
+                        variant={quizAnswers[currentLesson] === index
+                          ? (index === lessons[currentLesson].content.quiz.correct ? "default" : "destructive")
+                          : "outline"}
+                        className="w-full text-left justify-start"
                         onClick={() => handleQuizAnswer(currentLesson, index)}>
                         {option}
                       </Button>
@@ -292,16 +306,22 @@ export const WasteAdvancedModule = () => {
               </Tabs>
 
               <div className="flex justify-between mt-6 pt-6 border-t">
-                <Button variant="outline" onClick={() => setCurrentLesson(Math.max(0, currentLesson -1))} disabled={currentLesson===0}><ArrowLeft className="h-4 w-4 mr-2"/>Previous</Button>
-                <Button onClick={() => handleCompleteLesson(currentLesson)} disabled={completedLessons.includes(currentLesson)}>
-                  {completedLessons.includes(currentLesson) ? <><CheckCircle className="h-4 w-4 mr-2"/>Completed</> : <><Award className="h-4 w-4 mr-2"/>Mark Complete</>}
+                <Button variant="outline" onClick={() => setCurrentLesson(Math.max(0, currentLesson - 1))} disabled={currentLesson === 0}>
+                  <ArrowLeft className="h-4 w-4 mr-2"/>Previous
                 </Button>
-                <Button variant="outline" onClick={() => completedLessons.includes(currentLesson) ? setCurrentLesson(Math.min(lessons.length-1, currentLesson+1)) : toast.error("Complete lesson & quiz first!")} disabled={currentLesson===lessons.length-1}>Next<ArrowRight className="h-4 w-4 ml-2"/></Button>
+                <Button variant="outline" onClick={() => {
+                  if (completedLessons.includes(currentLesson)) {
+                    setCurrentLesson(Math.min(lessons.length - 1, currentLesson + 1));
+                  } else {
+                    toast.error("Complete lesson & quiz first!");
+                  }
+                }} disabled={currentLesson === lessons.length - 1}>
+                  Next<ArrowRight className="h-4 w-4 ml-2"/>
+                </Button>
               </div>
             </CardContent>
           </Card>
         )}
-        
       </div>
     </div>
   );

@@ -28,11 +28,13 @@ import QRScanner from "@/components/QRScanner";
 import ReportingSystem from "@/components/ReportingSystem";
 import EWasteDay from "@/components/EWasteDay";
 import WasteChatbot from "@/components/WasteChatbot";
-import Activities from "../Activities"; // Corrected relative path
+import Activities from "../Activities";
 import { usePoints } from "@/contexts/PointsContext";
 import { FiHome, FiActivity, FiBook, FiAward } from "react-icons/fi";
 import { Progress } from "@/components/ui/progress";
 import SchedulePickup from "@/components/SchedulePickup";
+import { AIWasteClassifier } from "@/components/AIWasteClassifier";
+import { LiveDashboardStats } from "@/components/LiveDashboardStats";
 
 const CDashboard = () => {
   const navigate = useNavigate();
@@ -40,14 +42,15 @@ const CDashboard = () => {
   const { toast } = useToast();
   const { coins, earn, redeem } = usePoints();
 
-  const [streak] = useState<number>(0);
+  const [streak] = useState<number>(7);
   const [weeklyGoal] = useState<number>(500);
-  const [weeklyProgress, setWeeklyProgress] = useState<number>(0);
+  const [weeklyProgress] = useState<number>(350);
   const [showRewards, setShowRewards] = useState(false);
   const [showQRScanner, setShowQRScanner] = useState(false);
   const [showReporting, setShowReporting] = useState(false);
   const [showEWasteDay, setShowEWasteDay] = useState(false);
   const [showSchedulePickup, setShowSchedulePickup] = useState(false);
+  const [showAIClassifier, setShowAIClassifier] = useState(false);
 
   const handlePointsEarnedWrapper = (points: number, meta: any) => {
     earn(points, meta);
@@ -74,7 +77,7 @@ const CDashboard = () => {
               <h1 className="text-2xl md:text-3xl font-bold mb-2">
                 Welcome back, {user?.displayName || "User"}! 👋
               </h1>
-              <p className="text-white/90">ID: {user?.uid || "—"}</p>
+              <p className="text-white/90">Swachh Buddy | ID: {user?.uid ? user.uid.slice(0, 10) + "..." : "—"}</p>
             </div>
             <div className="text-right">
               <div className="bg-white/10 px-3 py-2 rounded-lg inline-flex items-center gap-2">
@@ -86,36 +89,36 @@ const CDashboard = () => {
 
           {/* Stats cards */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <Card className="bg-white/10">
-              <CardContent className="p-4 text-center">
+            <Card className="bg-white/10 border-white/20">
+              <CardContent className="p-4 text-center text-white">
                 <div className="text-2xl font-bold">{coins}</div>
-                <p className="text-sm">Total Points</p>
+                <p className="text-sm text-white/80">Total Points</p>
               </CardContent>
             </Card>
-            <Card className="bg-white/10">
-              <CardContent className="p-4 text-center">
+            <Card className="bg-white/10 border-white/20">
+              <CardContent className="p-4 text-center text-white">
                 <div className="text-2xl font-bold">{coins}</div>
-                <p className="text-sm">Coins Earned</p>
+                <p className="text-sm text-white/80">Coins Earned</p>
               </CardContent>
             </Card>
-            <Card className="bg-white/10">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold">{streak}</div>
-                <p className="text-sm">Day Streak</p>
+            <Card className="bg-white/10 border-white/20">
+              <CardContent className="p-4 text-center text-white">
+                <div className="text-2xl font-bold">🔥 {streak}</div>
+                <p className="text-sm text-white/80">Day Streak</p>
               </CardContent>
             </Card>
-            <Card className="bg-white/10">
-              <CardContent className="p-4 text-center">
+            <Card className="bg-white/10 border-white/20">
+              <CardContent className="p-4 text-center text-white">
                 <div className="text-2xl font-bold">#4</div>
-                <p className="text-sm">District Rank</p>
+                <p className="text-sm text-white/80">District Rank</p>
               </CardContent>
             </Card>
-            <Card className="bg-white/10">
-              <CardContent className="p-4 text-center">
+            <Card className="bg-white/10 border-white/20">
+              <CardContent className="p-4 text-center text-white">
                 <div className="text-2xl font-bold">
                   {Math.round((weeklyProgress / weeklyGoal) * 100)}%
                 </div>
-                <p className="text-sm">Weekly Goal</p>
+                <p className="text-sm text-white/80">Weekly Goal</p>
               </CardContent>
             </Card>
           </div>
@@ -165,6 +168,15 @@ const CDashboard = () => {
                     <p className="text-sm text-muted-foreground">Verify waste disposal (+25 pts)</p>
                   </CardContent>
                 </Card>
+                <Card className="cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all flex-shrink-0 w-64" onClick={() => setShowAIClassifier(true)}>
+                  <CardContent className="p-6 flex flex-col items-center text-center space-y-3">
+                    <div className="p-3 rounded-full bg-primary/10 text-primary">
+                      <span className="text-2xl">🤖</span>
+                    </div>
+                    <h3 className="font-semibold">AI Waste Classifier</h3>
+                    <p className="text-sm text-muted-foreground">Photo → AI identifies waste type</p>
+                  </CardContent>
+                </Card>
                 <Card className="cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all flex-shrink-0 w-64" onClick={() => navigate('/live-map')}>
                   <CardContent className="p-6 flex flex-col items-center text-center space-y-3">
                     <div className="p-3 rounded-full bg-primary/10 text-primary">
@@ -189,7 +201,7 @@ const CDashboard = () => {
                       <Calendar className="h-7 w-7" />
                     </div>
                     <h3 className="font-semibold">Schedule Pickup</h3>
-                    <p className="text-sm text-muted-foreground">Book a waste pickup from your home</p>
+                    <p className="text-sm text-muted-foreground">Book a waste pickup from home</p>
                   </CardContent>
                 </Card>
                 <Card className="cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all flex-shrink-0 w-64" onClick={() => setShowEWasteDay(true)}>
@@ -203,6 +215,7 @@ const CDashboard = () => {
                 </Card>
               </div>
             </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
@@ -210,39 +223,32 @@ const CDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="p-3 bg-muted/30 rounded-md">QR Scan — +25 pts</div>
-                    <div className="p-3 bg-muted/30 rounded-md">Complete Training — +100 pts</div>
-                    <div className="p-3 bg-muted/30 rounded-md">Report Issue — +50 pts</div>
-                    <div className="p-3 bg-muted/30 rounded-md">E-Waste Collection — +75 pts</div>
+                    <div className="p-3 bg-muted/30 rounded-md">🔍 QR Scan — +25 pts</div>
+                    <div className="p-3 bg-muted/30 rounded-md">🎓 Complete Training — +100 pts</div>
+                    <div className="p-3 bg-muted/30 rounded-md">📷 Report Issue — +50 pts</div>
+                    <div className="p-3 bg-muted/30 rounded-md">♻️ E-Waste Collection — +75 pts</div>
                   </div>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader>
                   <CardTitle>Weekly Progress</CardTitle>
-                  <CardDescription>You're {weeklyGoal - weeklyProgress} points away</CardDescription>
+                  <CardDescription>You're {weeklyGoal - weeklyProgress} points away from your goal!</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="mb-2">{weeklyProgress} / {weeklyGoal} pts</div>
+                  <div className="mb-2 font-medium">{weeklyProgress} / {weeklyGoal} pts</div>
                   <div className="h-3 bg-muted/20 rounded overflow-hidden">
                     <div
                       style={{ width: `${Math.min(100, (weeklyProgress / weeklyGoal) * 100)}%` }}
-                      className="h-full bg-primary"
+                      className="h-full bg-primary transition-all duration-500"
                     />
                   </div>
+                  <p className="text-xs text-muted-foreground mt-2">Keep going! You're at {Math.round((weeklyProgress / weeklyGoal) * 100)}% this week.</p>
                 </CardContent>
               </Card>
             </div>
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Achievements</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-3 bg-success/10 rounded">Sign Up — Account created</div>
-                </div>
-              </CardContent>
-            </Card>
+
+            <LiveDashboardStats />
           </TabsContent>
 
           <TabsContent value="activities">
@@ -295,7 +301,7 @@ const CDashboard = () => {
                       <span>850 pts</span>
                     </div>
                     <Button asChild variant="outline" className="w-full">
-                      <Link to="/learning">Play Games</Link>
+                      <Link to="/play">Play Games</Link>
                     </Button>
                   </div>
                 </CardContent>
@@ -306,7 +312,7 @@ const CDashboard = () => {
                     <Users className="mr-2 h-5 w-5" />
                     Specialized Courses
                   </CardTitle>
-                  <CardDescription>Role-specific training for user type</CardDescription>
+                  <CardDescription>Role-specific training for your user type</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
@@ -357,12 +363,18 @@ const CDashboard = () => {
                   {leaderboardData.map((u, idx) => (
                     <div
                       key={idx}
-                      className={`flex items-center justify-between p-3 rounded ${u.isUser ? "bg-primary/10" : "bg-muted/30"}`}
+                      className={`flex items-center justify-between p-3 rounded ${u.isUser ? "bg-primary/10 border border-primary/20" : "bg-muted/30"}`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center font-bold">{u.rank}</div>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm
+                          ${u.rank === 1 ? "bg-yellow-400 text-yellow-900" :
+                            u.rank === 2 ? "bg-gray-300 text-gray-700" :
+                            u.rank === 3 ? "bg-orange-400 text-orange-900" :
+                            "bg-muted text-foreground"}`}>
+                          {u.rank === 1 ? "🥇" : u.rank === 2 ? "🥈" : u.rank === 3 ? "🥉" : u.rank}
+                        </div>
                         <div>
-                          <div className="font-medium">{u.name} {u.isUser && "(You)"}</div>
+                          <div className="font-medium">{u.name} {u.isUser && <span className="text-primary text-xs">(You)</span>}</div>
                           <div className="text-sm text-muted-foreground">{u.district}</div>
                         </div>
                       </div>
@@ -396,6 +408,10 @@ const CDashboard = () => {
       <EWasteDay
         isOpen={showEWasteDay}
         onClose={() => setShowEWasteDay(false)}
+      />
+      <AIWasteClassifier
+        isOpen={showAIClassifier}
+        onClose={() => setShowAIClassifier(false)}
       />
       <WasteChatbot />
 

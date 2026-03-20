@@ -80,13 +80,17 @@ const Navbar = ({ onNavigate }: NavbarProps) => {
     } else {
       navigate(path);
     }
-    setMobileOpen(false); // close drawer on mobile nav
+    setMobileOpen(false);
   };
 
   const navLinks = [
     { path: "/", label: "Home", icon: Home },
     {
-      path: user ? "/dashboard/corporate" : "/signup",
+      path: user
+  ? userData?.role === "municipal-employee"
+     ? "/dashboard/enduser"
+     : "/dashboard/corporate"
+     : "/signup",
       label: "Dashboard",
       icon: LayoutDashboard,
     },
@@ -131,12 +135,13 @@ const Navbar = ({ onNavigate }: NavbarProps) => {
           <div className="hidden md:flex items-center gap-4">
             {navLinks.map(({ path, label, icon: Icon }) => (
               <Button
-                key={path}
+                key={label}
                 variant="ghost"
                 size="sm"
                 onClick={() => handleNavigation(path)}
-                className={`flex items-center gap-2 ${location.pathname === path ? "text-primary font-semibold" : ""
-                  }`}
+                className={`flex items-center gap-2 ${
+                  location.pathname === path ? "text-primary font-semibold" : ""
+                }`}
               >
                 <Icon className="h-4 w-4" />
                 {label}
@@ -187,7 +192,7 @@ const Navbar = ({ onNavigate }: NavbarProps) => {
                       </span>
                       <Badge variant="secondary" className="text-xs h-4">
                         {userData?.role === "municipal-employee"
-                          ? "Municipal"
+                          ? "Employee"
                           : "Citizen"}
                       </Badge>
                     </div>
@@ -199,15 +204,18 @@ const Navbar = ({ onNavigate }: NavbarProps) => {
                       {userData?.displayName || user.displayName || "User"}
                     </p>
                     <p className="text-xs text-muted-foreground">{user.email}</p>
+                    <Badge variant="secondary" className="text-xs mt-1">
+                      {userData?.role === "municipal-employee"
+                        ? "Employee"
+                        : "Citizen"}
+                    </Badge>
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => handleNavigation("/profile")}>
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => handleNavigation("/certifications")}
-                  >
+                  <DropdownMenuItem onClick={() => handleNavigation("/certifications")}>
                     <Award className="mr-2 h-4 w-4" />
                     Certifications
                   </DropdownMenuItem>
@@ -266,12 +274,13 @@ const Navbar = ({ onNavigate }: NavbarProps) => {
         >
           {navLinks.map(({ path, label, icon: Icon }) => (
             <Button
-              key={path}
+              key={label}
               variant="ghost"
               size="sm"
               onClick={() => handleNavigation(path)}
-              className={`flex items-center gap-2 justify-start ${location.pathname === path ? "text-primary font-semibold" : ""
-                }`}
+              className={`flex items-center gap-2 justify-start ${
+                location.pathname === path ? "text-primary font-semibold" : ""
+              }`}
             >
               <Icon className="h-4 w-4" />
               {label}

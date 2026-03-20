@@ -8,25 +8,29 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ children, requireAuth = true }: ProtectedRouteProps) => {
-    const { user, loading } = useAuth();
+    const { user, userData, loading } = useAuth();
 
     if (loading) {
-        // Show loading spinner while checking auth state
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
+                    <p className="text-muted-foreground text-sm">Loading Swachh Buddy...</p>
+                </div>
             </div>
         );
     }
 
     if (requireAuth && !user) {
-        // Redirect to login if authentication is required but user is not logged in
         return <Navigate to="/login" replace />;
     }
 
     if (!requireAuth && user) {
-        // Redirect to dashboard if user is already logged in and trying to access auth pages
-        return <Navigate to="/dashboard" replace />;
+        // Route based on role — employee → corporate, citizen/default → enduser
+        if (userData?.role === 'municipal-employee') {
+    return <Navigate to="/dashboard/enduser" replace />;
+}
+    return <Navigate to="/dashboard/corporate" replace />;
     }
 
     return <>{children}</>;

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+
 import {
   Users,
   Recycle,
@@ -10,9 +11,9 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-bg.jpg";
-import basicsVideo from "@/assets/basics.mp4";
 import { Typewriter } from "react-simple-typewriter";
 import { motion } from "framer-motion";
+import { ImpactCounter } from "@/components/ImpactCounter";
 
 interface LandingProps {
   onUserTypeSelect: (
@@ -25,7 +26,7 @@ const Landing = ({ onUserTypeSelect }: LandingProps) => {
     {
       icon: <Users className="h-6 w-6" />,
       title: "Community Engagement",
-      description: "Join millions of Indians in the clean India mission",
+      description: "Join citizens across India in the clean India mission",
       link: "/community-engagement",
     },
     {
@@ -73,7 +74,6 @@ const Landing = ({ onUserTypeSelect }: LandingProps) => {
           className="absolute inset-0 z-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${heroImage})` }}
         />
-
         <div className="absolute inset-0 bg-black/40 z-0" />
         <div className="relative z-10 container mx-auto px-4 py-24 text-center">
           <motion.h1
@@ -83,9 +83,9 @@ const Landing = ({ onUserTypeSelect }: LandingProps) => {
             variants={fadeUp}
             transition={{ duration: 1 }}
           >
-            Transform India's
+            Your Swachhta Buddy
             <span className="block bg-gradient-to-r from-green-400 to-green-600 bg-clip-text text-transparent">
-              Waste Management
+              Swachh Buddy
             </span>
           </motion.h1>
 
@@ -95,9 +95,8 @@ const Landing = ({ onUserTypeSelect }: LandingProps) => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 1 }}
           >
-            Join the nationwide digital platform tackling India's waste crisis
-            through education, gamification, and transparency. Every person
-            matters.
+            India's smart waste management platform — segregate, track, verify,
+            and earn rewards for a cleaner nation. Every action matters.
           </motion.p>
 
           <motion.div
@@ -109,13 +108,24 @@ const Landing = ({ onUserTypeSelect }: LandingProps) => {
             <Button
               asChild
               size="lg"
-              className="bg-green-600 hover:bg-green-700 text-white shadow-lg"
+              className="bg-green-600 hover:bg-green-700 text-white shadow-lg px-8"
             >
               <Link to="/get-started">Get Started</Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="border-white text-white hover:bg-white/10 px-8"
+            >
+              <Link to="/learning">Explore Learning</Link>
             </Button>
           </motion.div>
         </div>
       </section>
+     
+      {/* Animated Impact Counter — replaces static stats bar */}
+      <ImpactCounter />
 
       {/* About Us Section */}
       <section className="relative py-20 bg-gradient-to-r from-green-100 via-green-50 to-green-100 overflow-hidden">
@@ -165,21 +175,13 @@ const Landing = ({ onUserTypeSelect }: LandingProps) => {
               Engage with eco-friendly challenges that are fun, impactful, and
               rewarding. 🌱
             </p>
-
-            {/* Know About Us Button */}
             <div className="mt-6">
               <Button
                 size="lg"
                 className="bg-green-600 hover:bg-green-700 text-white shadow-lg"
                 asChild
               >
-                <a
-                  href={basicsVideo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Know About Us
-                </a>
+                <Link to="/learning">Explore Learning Hub</Link>
               </Button>
             </div>
           </motion.div>
@@ -207,9 +209,14 @@ const Landing = ({ onUserTypeSelect }: LandingProps) => {
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            <motion.h2
+              className="text-3xl md:text-4xl font-bold text-foreground mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
               Powerful Features
-            </h2>
+            </motion.h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Everything you need to participate in India's waste management
               revolution
@@ -224,10 +231,10 @@ const Landing = ({ onUserTypeSelect }: LandingProps) => {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.2, duration: 0.6 }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
               >
                 <Link to={feature.link}>
-                  <Card className="hover:shadow-eco transition-all duration-300 hover:scale-105 cursor-pointer">
+                  <Card className="hover:shadow-eco transition-all duration-300 hover:scale-105 cursor-pointer h-full">
                     <CardContent className="p-6">
                       <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center text-primary">
                         {feature.icon}
@@ -245,6 +252,16 @@ const Landing = ({ onUserTypeSelect }: LandingProps) => {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* Team Credit */}
+      <section className="py-4 bg-green-900 text-center">
+        <p className="text-green-200 text-sm">
+          Built with ❤️ by Team{" "}
+          <span className="font-bold text-white">NeuroX</span> for{" "}
+          <span className="font-bold text-white">HACKXTRACT 2026</span>{" "}
+          | Problem ID: Sustainable Development
+        </p>
       </section>
     </div>
   );

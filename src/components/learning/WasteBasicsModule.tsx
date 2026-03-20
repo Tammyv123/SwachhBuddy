@@ -26,7 +26,6 @@ export const WasteBasicsModule = () => {
   const [quizAnswers, setQuizAnswers] = useState<{[key: number]: number}>({});
   const [introWatched, setIntroWatched] = useState(false);
 
-  // Restore from localStorage
   useEffect(() => {
     const savedCompleted = localStorage.getItem('completedLessons');
     if (savedCompleted) setCompletedLessons(JSON.parse(savedCompleted));
@@ -38,7 +37,6 @@ export const WasteBasicsModule = () => {
     if (savedIntro) setIntroWatched(JSON.parse(savedIntro));
   }, []);
 
-  // Save progress
   useEffect(() => {
     localStorage.setItem('completedLessons', JSON.stringify(completedLessons));
   }, [completedLessons]);
@@ -51,17 +49,14 @@ export const WasteBasicsModule = () => {
     localStorage.setItem('introWatched', JSON.stringify(introWatched));
   }, [introWatched]);
 
-  // Restart Course
   const handleRestartCourse = () => {
     setCompletedLessons([]);
     setQuizAnswers({});
     setIntroWatched(false);
     setCurrentLesson(0);
-
     localStorage.removeItem("completedLessons");
     localStorage.removeItem("quizAnswers");
     localStorage.removeItem("introWatched");
-
     toast.success("Course restarted! 🎉");
   };
 
@@ -80,8 +75,7 @@ export const WasteBasicsModule = () => {
           "Improper waste management causes health hazards and pollution",
           "Rapid urbanization increases plastic and e-waste generation"
         ],
-        detailedContent: `
-Waste management is a critical challenge due to increasing population and urban growth. Types of waste include:
+        detailedContent: `Waste management is a critical challenge due to increasing population and urban growth. Types of waste include:
 • Household: kitchen scraps, old clothes, packaging, leftover food
 • Commercial: offices, restaurants, shops, markets
 • Industrial: manufacturing byproducts, chemicals, metals, plastics
@@ -100,8 +94,7 @@ Best Practices:
 - Recycling plastics, metals, paper, and glass
 - Composting organic waste to produce manure
 - Energy recovery from waste (biogas, incineration with emission control)
-- Community awareness and participation
-        `,
+- Community awareness and participation`,
         quiz: {
           question: "How much solid waste does India generate daily?",
           options: ["1.2 lakh tonnes", "1.7 lakh tonnes", "2.1 lakh tonnes", "2.5 lakh tonnes"],
@@ -151,8 +144,7 @@ Best Practices:
             impact: "Saves 60-70% energy compared to producing from raw materials"
           }
         ],
-        detailedContent: `
-Importance of 3 R's:
+        detailedContent: `Importance of 3 R's:
 - Reduces landfill usage
 - Conserves natural resources
 - Decreases pollution
@@ -164,8 +156,7 @@ Implementation Tips:
 - Prefer products with eco-labels
 - Encourage community recycling drives
 - Educate children about waste reduction
-- Track household waste and try to reduce it every month
-        `,
+- Track household waste and try to reduce it every month`,
         quiz: {
           question: "Which R should be the first priority?",
           options: ["Recycle", "Reuse", "Reduce", "All are equal"],
@@ -207,8 +198,7 @@ Implementation Tips:
             percentage: "5-10%"
           }
         ],
-        detailedContent: `
-Segregation Benefits:
+        detailedContent: `Segregation Benefits:
 - Prevents contamination of recyclables
 - Reduces waste sent to landfills
 - Facilitates composting of organic waste
@@ -220,8 +210,7 @@ Tips for Households:
 - Label bins clearly
 - Educate family members about segregation
 - Dispose of e-waste at collection centers
-- Compost kitchen and garden waste regularly
-        `,
+- Compost kitchen and garden waste regularly`,
         quiz: {
           question: "Coconut shells go into which bin?",
           options: ["Green", "Blue", "Red", "Any bin"],
@@ -242,7 +231,7 @@ Tips for Households:
     setQuizAnswers({...quizAnswers, [lessonId]: answerIndex});
     const lesson = lessons[lessonId];
     if (answerIndex === lesson.content.quiz.correct) {
-      toast.success("Correct!");
+      toast.success("Correct! 🎉");
       handleCompleteLesson(lessonId);
     } else {
       toast.error("Incorrect, try again!");
@@ -254,6 +243,7 @@ Tips for Households:
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-accent/20 p-4">
       <div className="max-w-4xl mx-auto">
+
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -272,9 +262,9 @@ Tips for Households:
               <CardTitle>Introduction Video</CardTitle>
             </CardHeader>
             <CardContent>
-              <video 
-                src={basicsVideo} 
-                controls 
+              <video
+                src={basicsVideo}
+                controls
                 className="w-full rounded-lg"
                 onEnded={() => setIntroWatched(true)}
               />
@@ -291,11 +281,9 @@ Tips for Households:
               <Badge variant="secondary">{completedLessons.length}/{lessons.length}</Badge>
             </div>
             <Progress value={progressPercentage} className="w-full mb-4" />
-
-            {/* Restart Course Button */}
-            <Button 
-              variant="destructive" 
-              size="sm" 
+            <Button
+              variant="destructive"
+              size="sm"
               onClick={handleRestartCourse}
               className="mt-2"
             >
@@ -315,7 +303,11 @@ Tips for Households:
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-center">
                   <Badge variant={lesson.type === 'video' ? 'default' : 'secondary'}>
-                    {lesson.type === 'video' ? <Video className="h-3 w-3 mr-1"/> : lesson.type === 'interactive' ? <Play className="h-3 w-3 mr-1"/> : <FileText className="h-3 w-3 mr-1"/>}
+                    {lesson.type === 'video'
+                      ? <Video className="h-3 w-3 mr-1"/>
+                      : lesson.type === 'interactive'
+                      ? <Play className="h-3 w-3 mr-1"/>
+                      : <FileText className="h-3 w-3 mr-1"/>}
                     {lesson.type}
                   </Badge>
                   {completedLessons.includes(index) && <CheckCircle className="h-5 w-5 text-success" />}
@@ -331,7 +323,10 @@ Tips for Households:
         {introWatched && (
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><BookOpen className="h-5 w-5"/>{lessons[currentLesson].title}</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <BookOpen className="h-5 w-5"/>
+                {lessons[currentLesson].title}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <Tabs defaultValue="content" className="w-full">
@@ -342,11 +337,15 @@ Tips for Households:
 
                 <TabsContent value="content" className="space-y-6">
                   <p className="text-lg">{lessons[currentLesson].content.introduction}</p>
+
                   {lessons[currentLesson].content.keyPoints && (
                     <ul className="list-disc ml-5 space-y-1">
-                      {lessons[currentLesson].content.keyPoints.map((point, i) => <li key={i}>{point}</li>)}
+                      {lessons[currentLesson].content.keyPoints.map((point, i) => (
+                        <li key={i}>{point}</li>
+                      ))}
                     </ul>
                   )}
+
                   {lessons[currentLesson].content.principles && (
                     <div className="space-y-4">
                       {lessons[currentLesson].content.principles.map((principle, idx) => (
@@ -361,6 +360,7 @@ Tips for Households:
                       ))}
                     </div>
                   )}
+
                   {lessons[currentLesson].content.categories && (
                     <div className="space-y-4">
                       {lessons[currentLesson].content.categories.map((cat, idx) => (
@@ -369,25 +369,42 @@ Tips for Households:
                           <p className="text-muted-foreground mb-1">{cat.description}</p>
                           <p className="mb-1">Examples: {cat.examples.join(", ")}</p>
                           <p>Treatment: {cat.treatment}</p>
-                          <p>Percentage: {cat.percentage}</p>
+                          <p>Percentage of total waste: {cat.percentage}</p>
                         </div>
                       ))}
                     </div>
                   )}
+
                   {lessons[currentLesson].content.detailedContent && (
-                    <div className="whitespace-pre-line text-base leading-relaxed mt-4">
+                    <div className="whitespace-pre-line text-base leading-relaxed mt-4 p-4 bg-muted/30 rounded-lg">
                       {lessons[currentLesson].content.detailedContent}
                     </div>
                   )}
+
+                  {lessons[currentLesson].content.videoUrl && (
+                    <video src={lessons[currentLesson].content.videoUrl} controls className="w-full rounded-lg mt-4" />
+                  )}
+
+                  <Button
+                    onClick={() => handleCompleteLesson(currentLesson)}
+                    disabled={completedLessons.includes(currentLesson)}
+                    className="w-full"
+                  >
+                    {completedLessons.includes(currentLesson)
+                      ? <><CheckCircle className="h-4 w-4 mr-2"/>Completed</>
+                      : <><Award className="h-4 w-4 mr-2"/>Mark Complete</>}
+                  </Button>
                 </TabsContent>
 
                 <TabsContent value="quiz" className="space-y-4">
                   <div className="space-y-2">
-                    <p className="font-medium">{lessons[currentLesson].content.quiz.question}</p>
+                    <p className="font-medium text-lg">{lessons[currentLesson].content.quiz.question}</p>
                     {lessons[currentLesson].content.quiz.options.map((option, index) => (
-                      <Button key={index} 
-                        variant={quizAnswers[currentLesson] === index ? (index === lessons[currentLesson].content.quiz.correct ? "default":"destructive") : "outline"}
-                        className="w-full text-left"
+                      <Button key={index}
+                        variant={quizAnswers[currentLesson] === index
+                          ? (index === lessons[currentLesson].content.quiz.correct ? "default" : "destructive")
+                          : "outline"}
+                        className="w-full text-left justify-start"
                         onClick={() => handleQuizAnswer(currentLesson, index)}>
                         {option}
                       </Button>
@@ -398,11 +415,18 @@ Tips for Households:
 
               {/* Navigation */}
               <div className="flex justify-between mt-6 pt-6 border-t">
-                <Button variant="outline" onClick={() => setCurrentLesson(Math.max(0, currentLesson -1))} disabled={currentLesson===0}><ArrowLeft className="h-4 w-4 mr-2"/>Previous</Button>
-                <Button onClick={() => handleCompleteLesson(currentLesson)} disabled={completedLessons.includes(currentLesson)}>
-                  {completedLessons.includes(currentLesson) ? <><CheckCircle className="h-4 w-4 mr-2"/>Completed</> : <><Award className="h-4 w-4 mr-2"/>Mark Complete</>}
+                <Button variant="outline" onClick={() => setCurrentLesson(Math.max(0, currentLesson - 1))} disabled={currentLesson === 0}>
+                  <ArrowLeft className="h-4 w-4 mr-2"/>Previous
                 </Button>
-                <Button variant="outline" onClick={() => completedLessons.includes(currentLesson) ? setCurrentLesson(Math.min(lessons.length-1, currentLesson+1)) : toast.error("Complete lesson & quiz first!")} disabled={currentLesson===lessons.length-1}>Next<ArrowRight className="h-4 w-4 ml-2"/></Button>
+                <Button variant="outline" onClick={() => {
+                  if (completedLessons.includes(currentLesson)) {
+                    setCurrentLesson(Math.min(lessons.length - 1, currentLesson + 1));
+                  } else {
+                    toast.error("Complete lesson & quiz first!");
+                  }
+                }} disabled={currentLesson === lessons.length - 1}>
+                  Next<ArrowRight className="h-4 w-4 ml-2"/>
+                </Button>
               </div>
             </CardContent>
           </Card>

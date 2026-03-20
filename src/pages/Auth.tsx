@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { signInWithEmail, signUpWithEmail } from "@/lib/auth";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -14,8 +16,16 @@ const Auth = () => {
 
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const { toast } = useToast();
+
+  // IMPORTANT: matches App.tsx routing
+  // citizen    → /dashboard/corporate (CDashboard - has Scan QR)
+  // employee   → /dashboard/enduser  (EDashboard - has Generate QR)
+  const getDashboardRoute = () => {
+    return userType === "employee" ? "/dashboard/enduser" : "/dashboard/corporate";
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -23,37 +33,110 @@ const Auth = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     setIsLoading(true);
 
-    // Simulate login
-    await new Promise((res) => setTimeout(res, 1500));
+    try {
+      if (isLogin) {
+        const { user, error: authError } = await signInWithEmail(
+          formData.email,
+          formData.password
+        );
 
-    toast({
-      title: isLogin ? "Welcome back!" : "Account created",
-      description: `You are logged in as ${userType}.`,
-    });
+        if (authError) {
+          setError(authError);
+          return;
+        }
 
-    setIsLoading(false);
-    navigate("/dashboard", { replace: true });
+        if (user) {
+          toast({
+            title: "Welcome back! 👋",
+            description: `Logged in as ${userType === "employee" ? "Municipal Employee" : "Citizen"}.`,
+          });
+          navigate(getDashboardRoute(), { replace: true });
+        }
+      } else {
+        if (formData.password.length < 8) {
+          setError("Password must be at least 8 characters.");
+          return;
+        }
+
+        const role = userType === "employee" ? "municipal-employee" : "citizen";
+        const nameParts = formData.name.trim().split(" ");
+
+        const { user, error: authError } = await signUpWithEmail(
+          formData.email,
+          formData.password,
+          {
+            displayName: formData.name,
+            firstName: nameParts[0] || "",
+            lastName: nameParts.slice(1).join(" ") || "",
+            role: role as "citizen" | "municipal-employee",
+          }
+        );
+
+        if (authError) {
+          setError(authError);
+          return;
+        }
+
+        if (user) {
+          toast({
+            title: "Account created! 🎉",
+            description: `Welcome to Swachh Buddy as ${userType === "employee" ? "Municipal Employee" : "Citizen"}!`,
+          });
+          navigate(getDashboardRoute(), { replace: true });
+        }
+      }
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader>
-          <CardTitle>{isLogin ? "Login" : "Sign Up"}</CardTitle>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 p-6">
+      <Card className="w-full max-w-md shadow-xl border-0">
+        <CardHeader className="text-center space-y-2">
+          <div className="mx-auto w-14 h-14 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center mb-2">
+            <span className="text-2xl">{userType === "employee" ? "👷" : "🌱"}</span>
+          </div>
+          <CardTitle className="text-2xl">
+            {isLogin ? "Welcome Back!" : "Create Account"}
+          </CardTitle>
           <CardDescription>
-            {isLogin ? `Login as ${userType}` : `Create a ${userType} account`}
+            {isLogin
+              ? `Sign in as ${userType === "employee" ? "Municipal Employee" : "Citizen"}`
+              : `Register as ${userType === "employee" ? "Municipal Employee" : "Citizen"}`}
           </CardDescription>
         </CardHeader>
+
         <CardContent>
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <div>
                 <Label htmlFor="name">Full Name</Label>
-                <Input id="name" name="name" type="text" placeholder="Enter your name" required />
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="Enter your full name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  className="h-11 mt-1"
+                />
               </div>
             )}
+
             <div>
               <Label htmlFor="email">Email</Label>
               <Input
@@ -64,34 +147,45 @@ const Auth = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                className="h-11 mt-1"
               />
             </div>
+
             <div>
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 name="password"
                 type="password"
-                placeholder="Enter password"
+                placeholder={isLogin ? "Enter your password" : "Min. 8 characters"}
                 value={formData.password}
                 onChange={handleChange}
                 required
+                className="h-11 mt-1"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
+
+            <Button type="submit" className="w-full h-11" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  {isLogin ? "Logging in..." : "Creating account..."}
+                  {isLogin ? "Signing in..." : "Creating account..."}
                 </>
               ) : (
-                isLogin ? "Login" : "Sign Up"
+                isLogin ? "Sign In" : "Create Account"
               )}
             </Button>
           </form>
+
           <div className="text-center mt-4">
-            <Button variant="link" onClick={() => setIsLogin(!isLogin)}>
-              {isLogin ? "Need an account? Sign Up" : "Already have an account? Login"}
+            <Button
+              variant="link"
+              onClick={() => { setIsLogin(!isLogin); setError(""); }}
+              className="text-primary"
+            >
+              {isLogin
+                ? "Need an account? Sign Up"
+                : "Already have an account? Sign In"}
             </Button>
           </div>
         </CardContent>
